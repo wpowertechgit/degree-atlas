@@ -3,10 +3,27 @@
   "type": "object",
   "required": ["id", "title", "level", "subjects"],
   "additionalProperties": false,
+  "$defs": {
+    "choices": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "rule"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "rule": {"type": "string", "minLength": 1},
+          "source": {"type": "string", "pattern": "^https?://"}
+        }
+      }
+    }
+  },
   "properties": {
     "id": {"type": "string"},
     "title": {"type": "string"},
     "level": {"enum": ["BSc", "MSc", "PhD"]},
+    "curriculum_source": {"type": "string", "pattern": "^https?://"},
+    "choices": {"$ref": "#/$defs/choices"},
     "subjects": {
       "type": "array",
       "items": {
@@ -15,8 +32,10 @@
         "additionalProperties": false,
         "properties": {
           "subject": {"type": "string"},
-          "semester": {"type": "integer", "minimum": 1},
-          "kind": {"enum": ["mandatory", "elective"]}
+          "semester": {"type": ["integer", "null"], "minimum": 1},
+          "kind": {"enum": ["mandatory", "elective", "unverified"]},
+          "source": {"type": "string", "pattern": "^(https?://|materials/)"},
+          "group": {"type": "string", "minLength": 1}
         }
       }
     }

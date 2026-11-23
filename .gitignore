@@ -26,3 +26,12 @@ __pycache__/
 
 # Local tool settings
 .claude/settings.local.json
+
+# Local profiles (personal data sets created in the app)
+profiles/
+
+# Personal app settings (language)
+/settings.json
+
+# Imported personal course materials
+materials/

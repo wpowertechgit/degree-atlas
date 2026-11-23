@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "level", "type", "prompt", "solution"],
+    "additionalProperties": false,
+    "properties": {
+      "id": {"type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"},
+      "level": {"enum": [1, 2, 3]},
+      "type": {"enum": ["mcq", "numeric", "short", "open"]},
+      "prompt": {"type": "string", "minLength": 1},
+      "choices": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 2, "maxItems": 8},
+      "answer": {},
+      "tolerance": {"type": "number", "minimum": 0},
+      "unit": {"type": "string"},
+      "hints": {"type": "array", "items": {"type": "string", "minLength": 1}},
+      "solution": {"type": "string", "minLength": 1},
+      "difficulty": {"enum": [1, 2, 3]},
+      "concepts": {"type": "array", "items": {"type": "string"}}
+    },
+    "allOf": [
+      {"if": {"properties": {"type": {"const": "mcq"}}}, "then": {"required": ["choices", "answer"], "properties": {"answer": {"type": "array", "items": {"type": "integer", "minimum": 0}, "minItems": 1, "uniqueItems": true}}}},
+      {"if": {"properties": {"type": {"const": "numeric"}}}, "then": {"required": ["answer"], "properties": {"answer": {"type": "number"}}}},
+      {"if": {"properties": {"type": {"const": "short"}}}, "then": {"required": ["answer"], "properties": {"answer": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1}}}},
+      {"if": {"properties": {"type": {"const": "open"}}}, "then": {"not": {"required": ["answer"]}}}
+    ]
+  }
+}

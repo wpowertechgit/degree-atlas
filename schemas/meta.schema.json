@@ -29,7 +29,7 @@
         "additionalProperties": false,
         "properties": {
           "degree": {"type": "string"},
-          "kind": {"enum": ["mandatory", "elective"]}
+          "kind": {"enum": ["mandatory", "elective", "unverified"]}
         }
       }
     },

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["course", "files", "topics"],
+  "additionalProperties": false,
+  "properties": {
+    "course": {"type": "string", "minLength": 1},
+    "subject": {"type": "string", "description": "id of the subject written from these materials"},
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "kind"],
+        "additionalProperties": false,
+        "properties": {
+          "path": {"type": "string", "description": "relative to the course folder"},
+          "kind": {"enum": ["slides", "notes", "textbook", "problem-set", "exam", "other"]},
+          "pages": {"type": "integer", "minimum": 1}
+        }
+      }
+    },
+    "topics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "files", "covered"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "files": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+          "covered": {"type": "array", "items": {"enum": ["L0", "L1", "L2", "L3"]}, "uniqueItems": true}
+        }
+      }
+    }
+  }
+}

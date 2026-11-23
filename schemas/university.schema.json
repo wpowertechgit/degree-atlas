@@ -14,6 +14,20 @@
         "properties": {
           "name": {"type": "string"},
           "level": {"enum": ["BSc", "MSc", "PhD"]},
+          "curriculum_source": {"type": "string", "pattern": "^https?://"},
+          "choices": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "rule"],
+              "additionalProperties": false,
+              "properties": {
+                "name": {"type": "string", "minLength": 1},
+                "rule": {"type": "string", "minLength": 1},
+                "source": {"type": "string", "pattern": "^https?://"}
+              }
+            }
+          },
           "courses": {
             "type": "array",
             "items": {
@@ -26,8 +40,18 @@
                 "description": {"type": "string"},
                 "topics": {"type": "array", "items": {"type": "string"}},
                 "prerequisites": {"type": "array", "items": {"type": "string"}},
-                "semester": {"type": "integer", "minimum": 1},
+                "semester": {"type": ["integer", "null"], "minimum": 1},
                 "mandatory": {"type": "boolean"},
+                "requirement": {
+                  "type": "object",
+                  "required": ["kind", "source"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "kind": {"enum": ["mandatory", "elective"]},
+                    "source": {"type": "string", "pattern": "^https?://"},
+                    "group": {"type": "string", "minLength": 1}
+                  }
+                },
                 "url": {"type": "string"}
               }
             }

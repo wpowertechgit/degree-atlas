@@ -1,0 +1,19 @@
+name: Feature request or catalog source
+description: Suggest an idea, or a university catalog to add to catalogs.json
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like to see?
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why is it useful?
+  - type: input
+    id: catalog
+    attributes:
+      label: Catalog URL (if suggesting a university)
+      description: Please check the site's terms of use first.

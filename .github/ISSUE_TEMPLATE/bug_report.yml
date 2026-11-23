@@ -1,0 +1,31 @@
+name: Bug report
+description: Something in the app, a script or the agent workflow does not work
+labels: [bug]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where did it happen?
+      options: [Viewer app, Scripts (mapper, validate, next, setup), Agent output (wrong or broken content), Docs or AGENTS.md]
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+  - type: input
+    id: env
+    attributes:
+      label: OS and agent (for example Windows 11, Claude Code 2.1)
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error output
+      description: Paste messages or the output of `python scripts/validate.py`. Do not paste private course materials.
+      render: shell

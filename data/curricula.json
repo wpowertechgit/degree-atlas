@@ -1,0 +1,1364 @@
+{
+  "eth-bsc-computer-science": {
+    "source": "https://inf.ethz.ch/studies/bachelor.html",
+    "required": {
+      "252-0027-00L": 1,
+      "252-0026-00L": 1,
+      "401-0131-00L": 1,
+      "252-0025-01L": 1,
+      "252-0029-00L": 2,
+      "252-0030-00L": 2,
+      "401-0212-16L": 2,
+      "227-0003-10L": 2,
+      "401-0213-16L": 3,
+      "252-0057-00L": 3,
+      "252-0061-00L": 3,
+      "401-0663-00L": 3,
+      "401-0614-00L": 4,
+      "252-0064-00L": 4,
+      "252-0063-00L": 4,
+      "252-0058-00L": 4,
+      "252-0500-00L": null
+    },
+    "choices": [
+      {
+        "name": "Systems and Software Engineering",
+        "rule": "One of three specialization areas. Choose two areas and complete the core course credit requirement across them.",
+        "courses": [
+          "252-0210-00L",
+          "252-0217-00L"
+        ],
+        "source": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117354&ansicht=1&lang=en&seite=0&semkez=2025W"
+      },
+      {
+        "name": "Information and Data Processing",
+        "rule": "One of three specialization areas. Choose two areas and complete the core course credit requirement across them.",
+        "courses": [
+          "252-0206-00L",
+          "252-3110-00L"
+        ],
+        "source": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117354&ansicht=1&lang=en&seite=0&semkez=2025W"
+      },
+      {
+        "name": "Theoretical Computer Science",
+        "rule": "One of three specialization areas. Choose two areas and complete the core course credit requirement across them.",
+        "courses": [
+          "252-0209-00L"
+        ],
+        "source": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117354&ansicht=1&lang=en&seite=0&semkez=2025W"
+      },
+      {
+        "name": "Computer Science electives",
+        "rule": "Use eligible courses to fill the elective requirement.",
+        "courses": [
+          "227-0085-59L",
+          "227-0124-00L",
+          "227-0627-00L",
+          "227-1037-00L",
+          "252-0293-00L",
+          "252-0820-00L",
+          "252-2810-00L",
+          "402-0209-00L"
+        ],
+        "source": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117354&ansicht=1&lang=en&seite=0&semkez=2025W",
+        "course_sources": {
+          "252-0820-00L": "https://vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=120219&ansicht=1&lang=en&seite=0&semkez=2026S"
+        }
+      },
+      {
+        "name": "Supplementary courses",
+        "rule": "Earn at least 5 credits in this category. Physics I is one option.",
+        "courses": [
+          "101-0250-00L",
+          "151-0575-01L",
+          "151-0591-00L",
+          "151-0709-00L",
+          "227-0045-00L",
+          "227-0075-00L",
+          "227-0116-00L",
+          "227-0731-00L",
+          "227-2037-00L",
+          "252-2111-00L",
+          "351-1109-00L",
+          "363-0541-00L",
+          "363-1082-00L",
+          "363-1163-00L",
+          "401-0353-00L",
+          "401-0625-01L",
+          "401-3913-01L",
+          "401-4623-00L",
+          "401-7855-00L",
+          "402-0809-00L",
+          "402-1701-00L",
+          "636-0007-00L",
+          "701-0071-00L"
+        ],
+        "source": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117354&ansicht=1&lang=en&seite=0&semkez=2025W"
+      },
+      {
+        "name": "Science in Perspective",
+        "rule": "Earn at least 6 credits in Science in Perspective. Consult the catalog for the available choices."
+      },
+      {
+        "name": "Seminar choices",
+        "rule": "Earn 2 credits from an approved seminar. Choose the seminar that fits your plan.",
+        "courses": [
+          "227-2211-00L",
+          "252-2300-00L",
+          "252-2600-05L",
+          "252-4811-00L",
+          "252-5707-00L",
+          "263-3713-00L",
+          "263-4902-00L"
+        ],
+        "source": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117354&ansicht=1&lang=en&seite=0&semkez=2025W"
+      }
+    ],
+    "extra_courses": [
+      {
+        "code": "252-0029-00L",
+        "title": "Parallel Programming",
+        "description": "Develops programs that run multiple tasks concurrently and explains how to coordinate their work correctly and efficiently.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=197971&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "252-0030-00L",
+        "title": "Algorithms and Probability",
+        "description": "Uses probability to analyze algorithms and develops tools for understanding randomized computation.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=198593&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "401-0212-16L",
+        "title": "Analysis I",
+        "description": "Introduces rigorous calculus through sequences, limits, continuity, derivatives and integrals.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=199280&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "227-0003-10L",
+        "title": "Digital Design and Computer Architecture",
+        "description": "Connects digital circuits and logic to the design and operation of computer processors.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=199628&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "401-0614-00L",
+        "title": "Probability and Statistics",
+        "description": "Develops probability and statistical inference for describing uncertainty and drawing conclusions from data.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=199283&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "252-0064-00L",
+        "title": "Computer Networks",
+        "description": "Explains how computers exchange data across networks, from addressing and routing to transport protocols.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=199104&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "252-0063-00L",
+        "title": "Data Modelling and Databases",
+        "description": "Covers structured data models, relational queries and the principles of database systems.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=199173&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "252-0058-00L",
+        "title": "Formal Methods and Functional Programming",
+        "description": "Uses functional programming, specifications and formal reasoning to describe and check software behavior.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=199299&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      }
+    ]
+  },
+  "mit-bsc-computer-science-and-engineering-course-6-3": {
+    "source": "https://catalog.mit.edu/degree-charts/computer-science-engineering-course-6-3/",
+    "required": {
+      "6.1010": null,
+      "6.1020": null,
+      "6.1200[J]": null,
+      "6.1210": null,
+      "6.1903": null,
+      "6.1910": null
+    },
+    "choices": [
+      {
+        "name": "Programming introduction",
+        "rule": "Take 12 units: the full introductory course, or 6.100A with one of the two listed follow-ons.",
+        "courses": [
+          "6.1000",
+          "6.100A",
+          "6.100B",
+          "16.C20[J]"
+        ]
+      },
+      {
+        "name": "Theory",
+        "rule": "Choose one of the two courses.",
+        "courses": [
+          "6.1400[J]",
+          "6.1220[J]"
+        ]
+      },
+      {
+        "name": "Systems",
+        "rule": "Choose one of the three courses.",
+        "courses": [
+          "6.1800",
+          "6.1810",
+          "6.5831"
+        ]
+      },
+      {
+        "name": "Probability, inference or linear algebra",
+        "rule": "Choose one course.",
+        "courses": [
+          "6.3700",
+          "6.3800",
+          "18.05",
+          "18.06",
+          "18.C06[J]"
+        ]
+      },
+      {
+        "name": "Track electives",
+        "rule": "Satisfy the track, advanced undergraduate and communication requirements in the degree chart."
+      },
+      {
+        "name": "Institute requirements",
+        "rule": "Complete the Institute science and general education requirements, including physics. These are separate from the CS major.",
+        "source": "https://catalog.mit.edu/mit/undergraduate-education/general-institute-requirements/"
+      }
+    ],
+    "subject_assignments": {
+      "6.100A": "introduction-to-python-programming-mit-6-100a",
+      "6.3700": "introduction-to-probability-mit-6-3700",
+      "6.1220[J]": "design-and-analysis-of-algorithms"
+    },
+    "subject_assignment_sources": {
+      "6.1220[J]": "https://catalog.mit.edu/subjects/6/"
+    }
+  },
+  "national-bsc-bachelor-of-computing-computer-science": {
+    "source": "https://www.comp.nus.edu.sg/programmes/ug/cs/curr/",
+    "required": {
+      "CS1231S": null,
+      "CS2030S": null,
+      "CS2040S": null,
+      "CS2100": null,
+      "CS2101": null,
+      "CS2103T": null,
+      "CS2106": null,
+      "CS2109S": null,
+      "CS3230": null,
+      "MA1521": null,
+      "MA1522": null,
+      "ST2334": null
+    },
+    "choices": [
+      {
+        "name": "Common Curriculum",
+        "rule": "Complete the 40-unit common curriculum, using the options allowed for your cohort."
+      },
+      {
+        "name": "Computing breadth and depth",
+        "rule": "Complete the 32-unit category, including a focus area and the required industry experience or permitted dissertation route."
+      },
+      {
+        "name": "Unrestricted electives",
+        "rule": "Complete 40 units of unrestricted electives."
+      }
+    ]
+  },
+  "mit-bsc-climate-system-science-and-engineering-course-1-12": {
+    "source": "https://catalog.mit.edu/degree-charts/climate-system-science-engineering-course-1-12/",
+    "required": {
+      "18.03": null,
+      "12.003": null,
+      "12.301": null,
+      "1.086": null,
+      "1.108": null
+    },
+    "choices": [
+      {
+        "name": "Probability and inference",
+        "rule": "Take the probability and inference pair or MIT 6.3700.",
+        "courses": [
+          "1.010A",
+          "1.010B",
+          "6.3700"
+        ]
+      },
+      {
+        "name": "Data analysis",
+        "rule": "Choose one course.",
+        "courses": [
+          "1.073",
+          "1.074"
+        ]
+      },
+      {
+        "name": "Programming introduction",
+        "rule": "Complete 12 units via one approved option. See the chart for permitted pairs.",
+        "courses": [
+          "6.1000",
+          "6.100A",
+          "6.100B"
+        ]
+      },
+      {
+        "name": "Climate and energy policy",
+        "rule": "Choose one approved course. The chart lists alternatives beyond this import.",
+        "courses": [
+          "12.385"
+        ]
+      },
+      {
+        "name": "Global carbon cycle",
+        "rule": "Choose one course.",
+        "courses": [
+          "1.076",
+          "12.004"
+        ]
+      },
+      {
+        "name": "Communication-intensive lab",
+        "rule": "Choose one listed lab or one of the approved two-course sequences.",
+        "courses": [
+          "12.307",
+          "12.335",
+          "1.101",
+          "1.104",
+          "1.106",
+          "1.107"
+        ]
+      },
+      {
+        "name": "Restricted electives",
+        "rule": "Complete 45 units as part of an advisor-approved plan."
+      },
+      {
+        "name": "Institute requirements",
+        "rule": "Complete the Institute science and general education requirements.",
+        "source": "https://catalog.mit.edu/mit/undergraduate-education/general-institute-requirements/"
+      }
+    ]
+  },
+  "eth-bsc-chemical-engineering": {
+    "source": "https://chab.ethz.ch/studium/bachelor/bscc-chemieingenieurwissenschaften.html",
+    "required": {
+      "529-0011-02L": 1,
+      "529-0011-03L": 1,
+      "529-0011-01L": 1,
+      "402-0043-00L": 1,
+      "401-0271-00L": 1,
+      "529-0001-00L": 1,
+      "529-0011-06L": 1,
+      "529-0011-07L": 1,
+      "529-0121-00L": 3,
+      "529-0422-00L": 3,
+      "401-0373-00L": 3,
+      "529-0221-00L": 3,
+      "529-0051-00L": 3,
+      "529-0129-00L": 3,
+      "529-0557-00L": 5,
+      "151-0917-00L": 5,
+      "529-0636-00L": 5,
+      "529-0632-00L": 5,
+      "752-4001-00L": 5,
+      "401-0675-00L": 5,
+      "351-1159-00L": 5,
+      "529-0549-01L": 5,
+      "529-0639-01L": 5,
+      "529-0012-02L": 2,
+      "529-0012-03L": 2,
+      "529-0012-01L": 2,
+      "402-0044-00L": 2,
+      "401-0272-00L": 2,
+      "401-0622-00L": 2,
+      "529-0230-00L": 2,
+      "529-0122-00L": 4,
+      "529-0222-00L": 4,
+      "529-0431-00L": 4,
+      "551-1324-00L": 4,
+      "529-0058-00L": 4,
+      "529-0625-00L": 4,
+      "529-0054-00L": 4,
+      "529-0192-00L": 6,
+      "529-0633-00L": 6,
+      "151-0926-00L": 6,
+      "529-0031-00L": 6,
+      "529-0580-00L": 6,
+      "529-0940-00L": 6,
+      "529-0549-02L": 6
+    },
+    "choices": [
+      {
+        "name": "Science in Perspective",
+        "rule": "Earn 6 credits from the applicable Science in Perspective offerings."
+      }
+    ],
+    "extra_courses": [
+      {
+        "code": "529-0012-02L",
+        "title": "General Chemistry (Inorganic Chemistry) II",
+        "description": "Continues general inorganic chemistry through the behavior, bonding and reactions of inorganic substances.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=198990&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "529-0012-03L",
+        "title": "General Chemistry (Organic Chemistry) II",
+        "description": "Continues general organic chemistry and connects molecular structure to recognizable families of organic reactions.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=198800&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "529-0012-01L",
+        "title": "Physical Chemistry I: Thermodynamics",
+        "description": "Uses the laws of thermodynamics to explain equilibrium and energy changes in chemical systems.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=198014&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "402-0044-00L",
+        "title": "Physics II",
+        "description": "Continues the introductory physics sequence for chemical sciences students.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=198273&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "401-0272-00L",
+        "title": "Mathematical Foundations I: Analysis B",
+        "description": "Continues the analysis sequence with calculus techniques used in the chemical sciences.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=198124&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "401-0622-00L",
+        "title": "Mathematical Foundations II: Linear Algebra and Statistics",
+        "description": "Introduces linear algebra and statistical tools for interpreting data and modeling chemical systems.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=198632&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "529-0230-00L",
+        "title": "Inorganic and Organic Chemistry I",
+        "description": "Develops practical laboratory skills through work with inorganic and organic compounds.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=199078&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "529-0122-00L",
+        "title": "Inorganic Chemistry II",
+        "description": "Continues the study of inorganic compounds, with emphasis on the relationship between structure, properties and reactivity.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=197865&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "529-0222-00L",
+        "title": "Organic Chemistry II",
+        "description": "Extends the organic chemistry sequence through more complex reaction mechanisms and synthesis problems.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=199139&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "529-0431-00L",
+        "title": "Physical Chemistry III: Molecular Quantum Mechanics",
+        "description": "Applies quantum mechanics to explain molecular structure, electronic states and spectra.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=198466&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "551-1324-00L",
+        "title": "Biochemistry",
+        "description": "Introduces the molecules and reactions that make up living systems, including proteins, enzymes and metabolism.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=199290&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "529-0058-00L",
+        "title": "Analytical Chemistry II",
+        "description": "Continues analytical chemistry with methods for identifying and measuring the constituents of chemical samples.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=198835&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "529-0625-00L",
+        "title": "Chemical Engineering",
+        "description": "Introduces the engineering principles used to describe and design industrial chemical processes.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=197663&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "529-0054-00L",
+        "title": "Physical and Analytical Chemistry",
+        "description": "Combines laboratory work in physical chemistry with techniques for making and evaluating analytical measurements.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=198999&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "529-0192-00L",
+        "title": "Industrial Chemistry",
+        "description": "Examines how chemical transformations are organized into industrial production processes.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=199657&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "529-0633-00L",
+        "title": "Heterogeneous Reaction Engineering",
+        "description": "Studies how rates, transport and contact between phases affect the design of reactors with heterogeneous reactions.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=197983&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "151-0926-00L",
+        "title": "Separation Process Technology",
+        "description": "Introduces equipment and process concepts for separating mixtures into useful fractions.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=198909&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "529-0031-00L",
+        "title": "Chemical Process Control",
+        "description": "Applies feedback and dynamic modeling to the control of chemical processes.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=199833&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "529-0580-00L",
+        "title": "Safety, Environmental Assessment and Risk Analysis",
+        "description": "Covers methods for identifying process hazards and assessing environmental effects and risks.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=197799&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "529-0940-00L",
+        "title": "Modelling and Mathematical Methods in Process and Chemical Engineering",
+        "description": "Develops modeling and mathematical tools for analyzing problems in chemical and process engineering.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=201280&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "529-0549-02L",
+        "title": "Case Studies in Process Design II",
+        "description": "Applies chemical engineering principles to integrated process design cases.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=197864&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      }
+    ],
+    "subject_assignments": {
+      "529-0636-00L": "heat-transport-and-fluid-dynamics"
+    }
+  },
+  "mit-bsc-artificial-intelligence-and-decision-making-course-6-4": {
+    "source": "https://catalog.mit.edu/degree-charts/artifical-intelligence-decision-making-course-6-4/",
+    "required": {
+      "6.1010": null,
+      "6.1200[J]": null,
+      "6.1210": null
+    },
+    "choices": [
+      {
+        "name": "Programming introduction",
+        "rule": "Follow one approved 12-unit introductory route.",
+        "courses": [
+          "6.1000",
+          "6.100A",
+          "6.100B",
+          "16.C20[J]"
+        ]
+      },
+      {
+        "name": "Linear algebra",
+        "rule": "Choose one course.",
+        "courses": [
+          "18.C06[J]",
+          "18.06"
+        ]
+      },
+      {
+        "name": "Probability and inference",
+        "rule": "Choose one course.",
+        "courses": [
+          "6.3700",
+          "6.3800",
+          "18.05"
+        ]
+      },
+      {
+        "name": "Centers",
+        "rule": "Select five courses, covering each of the five areas in the degree chart.",
+        "courses": [
+          "6.3720",
+          "6.3900",
+          "6.C01",
+          "6.C011",
+          "6.3000",
+          "6.3100",
+          "6.4110",
+          "6.4420[J]",
+          "6.4400",
+          "6.C571[J]",
+          "6.1220[J]",
+          "6.1400[J]",
+          "6.3260[J]",
+          "6.3950",
+          "6.4120[J]",
+          "6.4590[J]",
+          "6.C35[J]"
+        ]
+      },
+      {
+        "name": "Application and advanced subjects",
+        "rule": "Complete the required CI-M application, advanced subject and ethics selections.",
+        "courses": [
+          "6.4200[J]",
+          "6.4210",
+          "6.4300",
+          "6.4610"
+        ]
+      },
+      {
+        "name": "Institute requirements",
+        "rule": "Complete the separate Institute science, general education, communication and other requirements.",
+        "source": "https://catalog.mit.edu/mit/undergraduate-education/general-institute-requirements/"
+      }
+    ]
+  },
+  "mit-bsc-computation-and-cognition-course-6-9": {
+    "source": "https://catalog.mit.edu/degree-charts/computation-cognition-6-9/",
+    "required": {
+      "9.01": null,
+      "6.3900": null
+    },
+    "choices": [
+      {
+        "name": "Introductory programming",
+        "rule": "Satisfy the programming requirement under the terms in the degree chart.",
+        "courses": [
+          "6.100A"
+        ]
+      },
+      {
+        "name": "Linear algebra",
+        "rule": "Choose one course.",
+        "courses": [
+          "18.06",
+          "18.C06[J]"
+        ]
+      },
+      {
+        "name": "Discrete mathematics or differential equations",
+        "rule": "Choose one course.",
+        "courses": [
+          "6.1200[J]",
+          "6.120A",
+          "18.03"
+        ]
+      },
+      {
+        "name": "Probability or statistics",
+        "rule": "Choose one course.",
+        "courses": [
+          "6.3700",
+          "6.3800",
+          "9.07",
+          "15.069",
+          "18.05",
+          "18.600"
+        ]
+      },
+      {
+        "name": "EECS selections",
+        "rule": "Choose two courses in the first EECS group and one in the second. The chart shows which courses count in each.",
+        "courses": [
+          "6.1010",
+          "6.1210",
+          "6.2000",
+          "6.3000",
+          "6.3100",
+          "6.3950",
+          "6.4110"
+        ]
+      },
+      {
+        "name": "Brain systems and cognition",
+        "rule": "Choose one course in each of the two BCS groups. Check the list in the source.",
+        "courses": [
+          "9.09[J]",
+          "9.13",
+          "9.18[J]",
+          "9.21[J]",
+          "9.35",
+          "9.36",
+          "9.40",
+          "9.67[J]",
+          "9.19",
+          "9.39",
+          "9.49",
+          "9.53",
+          "9.66[J]",
+          "9.85"
+        ]
+      },
+      {
+        "name": "Lab, advanced project and electives",
+        "rule": "Complete one approved lab and one advanced project, plus the program electives.",
+        "courses": [
+          "6.4200[J]",
+          "6.4210",
+          "6.8301",
+          "6.8611",
+          "6.UAR[J]",
+          "9.41",
+          "9.58"
+        ]
+      },
+      {
+        "name": "Institute requirements",
+        "rule": "Complete the separate Institute science, general education, communication and other requirements.",
+        "source": "https://catalog.mit.edu/mit/undergraduate-education/general-institute-requirements/"
+      }
+    ],
+    "subject_assignments": {
+      "6.120A": "discrete-mathematics-and-proof-for-computer-science-mit",
+      "9.07": "statistics-for-brain-and-cognitive-science",
+      "18.05": "introduction-to-probability-and-statistics-mit",
+      "18.600": "probability-and-random-variables-mit"
+    }
+  },
+  "mit-bsc-computer-science-economics-and-data-science-course-6-14": {
+    "source": "https://catalog.mit.edu/degree-charts/computer-science-economics-data-science-course-6-14/",
+    "required": {
+      "6.1200[J]": null,
+      "6.1210": null,
+      "6.1220[J]": null,
+      "14.01": null,
+      "14.32": null,
+      "6.3900": null
+    },
+    "choices": [
+      {
+        "name": "Linear algebra",
+        "rule": "Choose one course.",
+        "courses": [
+          "18.06",
+          "18.C06[J]"
+        ]
+      },
+      {
+        "name": "Programming introduction",
+        "rule": "Complete one 12-unit route.",
+        "courses": [
+          "6.1000",
+          "6.100A",
+          "6.100B"
+        ]
+      },
+      {
+        "name": "Probability and statistics",
+        "rule": "Choose one course.",
+        "courses": [
+          "14.30",
+          "18.600",
+          "6.3700"
+        ]
+      },
+      {
+        "name": "Project and communication choices",
+        "rule": "Pick one in each of the two project-based groups.",
+        "courses": [
+          "6.UAR[J]",
+          "6.UAT",
+          "15.276",
+          "14.05",
+          "14.18",
+          "14.33",
+          "14.35"
+        ]
+      },
+      {
+        "name": "Electives",
+        "rule": "Choose a computer science elective and three economics electives with the required group coverage.",
+        "courses": [
+          "6.3260[J]",
+          "6.C395[J]",
+          "6.C571[J]",
+          "15.053"
+        ]
+      },
+      {
+        "name": "Institute requirements",
+        "rule": "Complete the separate Institute science, general education, communication and other requirements.",
+        "source": "https://catalog.mit.edu/mit/undergraduate-education/general-institute-requirements/"
+      }
+    ]
+  },
+  "mit-bsc-computer-science-and-molecular-biology-course-6-7": {
+    "source": "https://catalog.mit.edu/degree-charts/computer-science-molecular-biology-course-6-7/",
+    "required": {
+      "6.120A": null,
+      "5.12": null,
+      "5.601": null,
+      "6.1010": null,
+      "6.1210": null,
+      "7.03": null,
+      "7.06": null
+    },
+    "choices": [
+      {
+        "name": "Programming introduction",
+        "rule": "Complete one 12-unit route.",
+        "courses": [
+          "6.1000",
+          "6.100A",
+          "6.100B",
+          "16.C20[J]"
+        ]
+      },
+      {
+        "name": "Linear algebra",
+        "rule": "Choose one course.",
+        "courses": [
+          "6.C06[J]",
+          "18.06"
+        ]
+      },
+      {
+        "name": "Introductory laboratory",
+        "rule": "Complete the approved laboratory route or the named course pair.",
+        "courses": [
+          "7.002",
+          "7.003[J]",
+          "20.109"
+        ]
+      },
+      {
+        "name": "Machine learning foundation",
+        "rule": "Choose the standalone course or the two-course route shown in the chart.",
+        "courses": [
+          "6.3900",
+          "6.C01",
+          "7.C01"
+        ]
+      },
+      {
+        "name": "Biochemistry",
+        "rule": "Choose one course.",
+        "courses": [
+          "7.05",
+          "5.07[J]"
+        ]
+      },
+      {
+        "name": "Restricted electives and technical communication",
+        "rule": "Meet the computational biology, communication, and restricted elective unit requirements in the chart.",
+        "courses": [
+          "1.088",
+          "6.8701[J]",
+          "6.8711[J]",
+          "7.093",
+          "7.094",
+          "7.32",
+          "7.33[J]",
+          "18.413",
+          "6.UAR[J]",
+          "6.UAT",
+          "7.19"
+        ]
+      },
+      {
+        "name": "Institute requirements",
+        "rule": "Complete the separate Institute science, general education, communication and other requirements.",
+        "source": "https://catalog.mit.edu/mit/undergraduate-education/general-institute-requirements/"
+      }
+    ]
+  },
+  "mit-bsc-electrical-engineering-with-computing-course-6-5": {
+    "source": "https://catalog.mit.edu/degree-charts/electrical-engineering-computing-course-6-5/",
+    "required": {
+      "6.100A": null,
+      "6.1210": null,
+      "6.1903": null,
+      "6.1910": null,
+      "6.2000": null,
+      "6.3000": null,
+      "6.9000": null
+    },
+    "choices": [
+      {
+        "name": "Discrete mathematics",
+        "rule": "Choose one course.",
+        "courses": [
+          "6.120A",
+          "6.1200[J]"
+        ]
+      },
+      {
+        "name": "Linear algebra",
+        "rule": "Choose one course.",
+        "courses": [
+          "18.C06[J]",
+          "18.06"
+        ]
+      },
+      {
+        "name": "Probability and statistics",
+        "rule": "Choose one course.",
+        "courses": [
+          "6.3700",
+          "6.3800",
+          "18.05"
+        ]
+      },
+      {
+        "name": "Electrical engineering tracks",
+        "rule": "Choose two courses from each of two different tracks. Also satisfy the lab and communication rules."
+      },
+      {
+        "name": "Department choices",
+        "rule": "Choose two eligible Course 6 subjects from the programs listed in the chart."
+      },
+      {
+        "name": "Institute requirements",
+        "rule": "Complete the separate Institute science, general education, communication and other requirements.",
+        "source": "https://catalog.mit.edu/mit/undergraduate-education/general-institute-requirements/"
+      }
+    ]
+  },
+  "mit-bsc-mathematics-with-computer-science-course-18-c": {
+    "source": "https://catalog.mit.edu/degree-charts/mathematics-computer-science-course-18-c/",
+    "required": {
+      "6.100A": null,
+      "6.1010": null,
+      "6.1210": null,
+      "18.410[J]": null
+    },
+    "choices": [
+      {
+        "name": "Differential equations",
+        "rule": "Complete the differential equations requirement. See the chart for the allowed alternatives.",
+        "courses": [
+          "18.03"
+        ]
+      },
+      {
+        "name": "Linear algebra",
+        "rule": "Choose one course.",
+        "courses": [
+          "18.06",
+          "18.C06[J]"
+        ]
+      },
+      {
+        "name": "Discrete mathematics",
+        "rule": "Choose one course.",
+        "courses": [
+          "18.062[J]",
+          "18.200",
+          "18.200A"
+        ]
+      },
+      {
+        "name": "Theory of computation",
+        "rule": "Choose one course.",
+        "courses": [
+          "18.400[J]",
+          "18.404"
+        ]
+      },
+      {
+        "name": "Computing breadth",
+        "rule": "Choose one course.",
+        "courses": [
+          "6.1020",
+          "6.1800",
+          "6.3900",
+          "6.4110"
+        ]
+      },
+      {
+        "name": "Restricted electives",
+        "rule": "Complete the additional mathematics and computing electives in the degree chart."
+      },
+      {
+        "name": "Institute requirements",
+        "rule": "Complete the separate Institute science, general education, communication and other requirements.",
+        "source": "https://catalog.mit.edu/mit/undergraduate-education/general-institute-requirements/"
+      }
+    ],
+    "subject_assignments": {
+      "18.410[J]": "design-and-analysis-of-algorithms",
+      "18.200A": "principles-of-discrete-applied-mathematics-mit-18-200a"
+    },
+    "subject_assignment_sources": {
+      "18.410[J]": "https://catalog.mit.edu/subjects/18/"
+    }
+  },
+  "mit-bsc-urban-science-and-planning-with-computer-science-course-11-6": {
+    "source": "https://catalog.mit.edu/degree-charts/urban-science-planning-computer-science-11-6/",
+    "required": {
+      "6.1010": null,
+      "6.1200[J]": null,
+      "6.1210": null,
+      "6.C01": null,
+      "1.C01": null,
+      "11.001[J]": null,
+      "11.188": null,
+      "11.C35[J]": null
+    },
+    "choices": [
+      {
+        "name": "Programming introduction",
+        "rule": "Complete one 12-unit route.",
+        "courses": [
+          "6.1000",
+          "6.100A",
+          "6.100B",
+          "16.C20[J]"
+        ]
+      },
+      {
+        "name": "Urban planning choice",
+        "rule": "Choose one course.",
+        "courses": [
+          "6.4590[J]",
+          "11.002[J]",
+          "11.011",
+          "11.165"
+        ]
+      },
+      {
+        "name": "Urban technology workshop",
+        "rule": "Choose one course.",
+        "courses": [
+          "11.007",
+          "11.024",
+          "11.092",
+          "11.138",
+          "11.154",
+          "11.171"
+        ]
+      },
+      {
+        "name": "Senior project or thesis",
+        "rule": "Choose one approved route from the chart.",
+        "courses": [
+          "6.UAR[J]",
+          "11.UAR[J]",
+          "11.THT[J]",
+          "11.THU"
+        ]
+      },
+      {
+        "name": "Computer science and urban science electives",
+        "rule": "Meet the separate credit requirements in the two elective lists."
+      },
+      {
+        "name": "Institute requirements",
+        "rule": "Complete the separate Institute science, general education, communication and other requirements.",
+        "source": "https://catalog.mit.edu/mit/undergraduate-education/general-institute-requirements/"
+      }
+    ]
+  },
+  "eth-bsc-computational-science-and-engineering": {
+    "source": "https://math.ethz.ch/de/studium/bachelor/rechnergestuetzte-wissenschaften/studieninteressierte/details.html",
+    "required": {
+      "401-0151-00L": 1,
+      "252-0025-01L": 1,
+      "252-0856-00L": 1,
+      "401-0231-10L": 1,
+      "402-0043-00L": 1,
+      "401-0232-10L": 2,
+      "401-0302-10L": 2,
+      "402-0044-00L": 2,
+      "529-4000-00L": 2,
+      "252-0002-00L": 2,
+      "401-0353-00L": null,
+      "401-0647-00L": null,
+      "401-2673-00L": null,
+      "401-2813-00L": null,
+      "252-0061-00L": null,
+      "401-0674-00L": null,
+      "401-0604-00L": null,
+      "151-0120-00L": null,
+      "529-0483-00L": null,
+      "401-3990-18L": null
+    },
+    "choices": [
+      {
+        "name": "Core course choices",
+        "rule": "Fulfil the published core course requirements using the eligible options in the course catalogue.",
+        "courses": [
+          "252-0232-00L",
+          "263-2800-00L"
+        ],
+        "course_sources": {
+          "252-0232-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "263-2800-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W"
+        }
+      },
+      {
+        "name": "Specialization ? Astrophysics",
+        "rule": "Choose a field of specialization and meet its course requirements. Check the catalogue for allowed combinations.",
+        "courses": [
+          "401-7851-00L",
+          "401-7855-00L"
+        ],
+        "course_sources": {
+          "401-7851-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "401-7855-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W"
+        }
+      },
+      {
+        "name": "Specialization ? Physics of the Atmosphere",
+        "rule": "Choose a field of specialization and meet its course requirements. Check the catalogue for allowed combinations.",
+        "courses": [
+          "701-0023-00L"
+        ],
+        "course_sources": {
+          "701-0023-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W"
+        }
+      },
+      {
+        "name": "Specialization ? Chemistry",
+        "rule": "Choose a field of specialization and meet its course requirements. Check the catalogue for allowed combinations.",
+        "courses": [
+          "529-0004-01L",
+          "402-0205-00L"
+        ],
+        "course_sources": {
+          "529-0004-01L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "402-0205-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W"
+        }
+      },
+      {
+        "name": "Specialization ? Fluid Dynamics",
+        "rule": "Choose a field of specialization and meet its course requirements. Check the catalogue for allowed combinations.",
+        "courses": [
+          "151-0709-00L",
+          "151-0125-00L"
+        ],
+        "course_sources": {
+          "151-0709-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "151-0125-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W"
+        }
+      },
+      {
+        "name": "Specialization ? Systems and Control",
+        "rule": "Choose a field of specialization and meet its course requirements. Check the catalogue for allowed combinations.",
+        "courses": [
+          "227-0103-00L",
+          "227-0045-00L"
+        ],
+        "course_sources": {
+          "227-0103-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "227-0045-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W"
+        }
+      },
+      {
+        "name": "Specialization ? Robotics",
+        "rule": "Meet the robotics specialization requirements. The catalogue limits credit to one of the two computer vision courses and one of the two corresponding AI courses in this group.",
+        "courses": [
+          "227-0447-00L",
+          "252-0535-00L",
+          "263-3210-00L",
+          "151-0563-01L",
+          "151-0851-00L",
+          "263-5902-00L",
+          "263-5210-00L"
+        ],
+        "course_sources": {
+          "227-0447-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "252-0535-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "263-3210-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "151-0563-01L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "151-0851-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "263-5902-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "263-5210-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W"
+        }
+      },
+      {
+        "name": "Specialization ? Physics",
+        "rule": "Choose a field of specialization and meet its course requirements. Check the catalogue for allowed combinations.",
+        "courses": [
+          "402-0809-00L"
+        ],
+        "course_sources": {
+          "402-0809-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W"
+        }
+      },
+      {
+        "name": "Specialization ? Computational Finance",
+        "rule": "Choose a field of specialization and meet its course requirements. Check the catalogue for allowed combinations.",
+        "courses": [
+          "401-3913-01L",
+          "401-4657-00L"
+        ],
+        "course_sources": {
+          "401-3913-01L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "401-4657-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W"
+        }
+      },
+      {
+        "name": "Specialization ? Electromagnetics",
+        "rule": "Choose a field of specialization and meet its course requirements. Check the catalogue for allowed combinations.",
+        "courses": [
+          "227-2037-00L",
+          "151-0913-00L"
+        ],
+        "course_sources": {
+          "227-2037-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "151-0913-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W"
+        }
+      },
+      {
+        "name": "Specialization ? Geophysics",
+        "rule": "Choose a field of specialization and meet its course requirements. Check the catalogue for allowed combinations.",
+        "courses": [
+          "651-4007-00L",
+          "651-4241-00L",
+          "651-4006-00L",
+          "651-4273-00L"
+        ],
+        "course_sources": {
+          "651-4007-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "651-4241-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "651-4006-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "651-4273-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W"
+        }
+      },
+      {
+        "name": "Specialization ? Biology",
+        "rule": "Choose a field of specialization and meet its course requirements. Check the catalogue for allowed combinations.",
+        "courses": [
+          "636-0007-00L",
+          "636-0706-00L",
+          "227-1037-00L"
+        ],
+        "course_sources": {
+          "636-0007-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "636-0706-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "227-1037-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W"
+        }
+      },
+      {
+        "name": "Electives",
+        "rule": "Complete at least two eligible electives.",
+        "courses": [
+          "151-0833-00L",
+          "227-0102-00L",
+          "227-0116-00L",
+          "227-0147-10L",
+          "227-0417-00L",
+          "227-0971-00L",
+          "252-0209-00L",
+          "252-0206-00L",
+          "252-0543-01L",
+          "252-0546-00L",
+          "252-0834-00L",
+          "401-4623-00L",
+          "401-3901-00L",
+          "402-2203-01L",
+          "227-1033-00L",
+          "227-0627-00L",
+          "401-3931-00L",
+          "401-4632-15L",
+          "101-0491-00L"
+        ],
+        "course_sources": {
+          "151-0833-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "227-0102-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "227-0116-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "227-0147-10L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "227-0417-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "227-0971-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "252-0209-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "252-0206-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "252-0543-01L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "252-0546-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "252-0834-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "401-4623-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "401-3901-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "402-2203-01L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "227-1033-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "227-0627-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "401-3931-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "401-4632-15L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "101-0491-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W"
+        }
+      },
+      {
+        "name": "Additional electives",
+        "rule": "Check the CSE master?s-course eligibility and recognition conditions before choosing.",
+        "courses": [
+          "701-1221-00L",
+          "529-0003-01L",
+          "151-0109-00L",
+          "151-0213-00L",
+          "636-0017-00L",
+          "151-0660-00L"
+        ],
+        "course_sources": {
+          "701-1221-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "529-0003-01L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "151-0109-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "151-0213-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "636-0017-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "151-0660-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=120211&ansicht=1&lang=en&seite=0&semkez=2026S"
+        }
+      },
+      {
+        "name": "Thesis preparation",
+        "rule": "Follow the thesis preparation and approved substitution rules in the catalogue.",
+        "courses": [
+          "401-2000-00L",
+          "401-2000-01L",
+          "402-2000-00L"
+        ],
+        "course_sources": {
+          "401-2000-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "401-2000-01L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W",
+          "402-2000-00L": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/sucheLehrangebot.view?abschnittId=117347&ansicht=1&lang=en&seite=0&semkez=2025W"
+        }
+      },
+      {
+        "name": "Science in Perspective",
+        "rule": "Earn the required credits from the applicable Science in Perspective offerings."
+      }
+    ],
+    "extra_courses": [
+      {
+        "code": "401-0232-10L",
+        "title": "Analysis 2",
+        "description": "Continues the calculus sequence with differentiation and integration in several variables.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=199119&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "401-0302-10L",
+        "title": "Mathematical Methods",
+        "description": "Develops mathematical methods used in the analysis of physical and computational problems.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=199386&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "402-0044-00L",
+        "title": "Physics II",
+        "description": "Continues the introductory physics sequence for science and engineering students.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=198273&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "529-4000-00L",
+        "title": "Chemistry",
+        "description": "Introduces chemical concepts and gives science and engineering students practice applying them.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=198609&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "252-0002-00L",
+        "title": "Data Structures and Algorithms",
+        "description": "Develops data structures and algorithms for solving problems efficiently, alongside programming practice.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=197973&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "401-0674-00L",
+        "title": "Numerical Methods for Partial Differential Equations",
+        "description": "Develops numerical approximations for solutions of partial differential equations and examines their behavior.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=198602&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "401-0604-00L",
+        "title": "Probability Theory and Statistics",
+        "description": "Develops mathematical methods for reasoning about randomness and drawing conclusions from data.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=198433&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "151-0120-00L",
+        "title": "Fluid Dynamics",
+        "description": "Studies the motion of fluids and the mathematical descriptions of flowing systems.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=197555&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      },
+      {
+        "code": "529-0483-00L",
+        "title": "Statistical Physics and Computer Simulation",
+        "description": "Uses statistical mechanics and computer simulation to relate microscopic models to macroscopic behavior.",
+        "url": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=198937&semkez=2026S&ansicht=LEHRVERANSTALTUNGEN&lang=en"
+      }
+    ],
+    "subject_assignments": {
+      "263-5902-00L": "computer-vision-eth-263-5902"
+    }
+  }
+}

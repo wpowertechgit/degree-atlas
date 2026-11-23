@@ -4,7 +4,9 @@ Stages (run in order, each is resumable):
   python scripts/mapper.py cluster   # TF-IDF candidate groups across universities
   python scripts/mapper.py judge     # Sonnet decides which candidates are the same subject
   python scripts/mapper.py assemble  # write data/subjects, degrees, domains
+  python scripts/mapper.py curriculum # refresh degree plans with the existing subject IDs
 """
+import os
 import json
 import math
 import re
@@ -14,12 +16,14 @@ from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-root = Path(__file__).resolve().parent.parent
+repo = Path(__file__).resolve().parent.parent
+root = Path(os.environ.get("DEGREE_ATLAS_PROFILE") or repo)  # profile folder holding data/, work/
 work = root / "work"
 work.mkdir(exist_ok=True)
 THRESHOLD = 0.3
 SAME_UNI_THRESHOLD = 0.55
 BATCH = 12
+JUDGE_REVISION = "curriculum-equivalence-v2"
 
 
 def load(p):
@@ -31,7 +35,15 @@ def save(p, o):
 
 
 def unis():
-    return [load(f) for f in sorted((root / "data/universities").glob("*.json"))]
+    result = [load(f) for f in sorted((root / "data/universities").glob("*.json"))]
+    plans = curriculum_plans()
+    for u in result:
+        uid = u["university"].lower().split()[0]
+        for d in u["degrees"]:
+            plan = plans.get(degree_id(uid, d), {})
+            codes = {c["code"] for c in d["courses"]}
+            d["courses"].extend(c for c in plan.get("extra_courses", []) if c["code"] not in codes)
+    return result
 
 
 def courses():
@@ -95,7 +107,8 @@ def cluster():
           f"{n - sum(map(len, multi))} singletons")
 
 
-PROMPT = """You are the mapper for a university-subject network. Below are candidate groups of courses from different universities (any language). For each group, partition its members into sets that teach essentially the SAME subject content (same core topics at similar depth). Members that teach something different must go in separate sets. A set may be a single course.
+PROMPT = """You are the mapper for a university-subject network. Below are candidate groups of courses from different universities (any language). For each group, partition its members into sets that teach essentially the SAME subject content (same core topics at similar depth and scope). Members that teach something different must go in separate sets. A set may be a single course.
+Shared words, titles, department, and theme are insufficient evidence. Keep introductory and advanced sequences, labs versus lectures, and generic thesis, seminar or project titles separate unless the catalog descriptions establish genuine equivalence. Split by default when evidence is thin. Course equivalence never changes which degree a course belongs to, its requirement category, or its semester.
 Reply with ONLY a JSON object: {{"<group number>": [["uni:code","uni:code"],["uni:code"]], ...}} covering every member of every group exactly once.
 
 {body}"""
@@ -106,7 +119,7 @@ def judge():
     groups = load(work / "clusters.json")["multi"]
     done_f = work / "judged.json"
     done = load(done_f) if done_f.exists() else {}
-    gk = lambda i: "|".join(sorted(groups[i]))  # key by members: stable across re-clustering
+    gk = lambda i: judgment_key(groups[i])
     todo = [i for i in range(len(groups)) if gk(i) not in done]
     batches = [todo[i:i + BATCH] for i in range(0, len(todo), BATCH)]
 
@@ -138,6 +151,158 @@ def slug(s):
     return s[:60].strip("-") or "subject"
 
 
+def judgment_key(group):
+    return JUDGE_REVISION + "|" + "|".join(sorted(group))
+
+
+def degree_id(uid, degree):
+    return f"{uid}-{degree['level'].lower()}-{slug(degree['name'])}"
+
+
+def curriculum_plans():
+    path = repo / "data/curricula.json"
+    return load(path) if path.exists() else {}
+
+
+def curriculum_entries(degree, plan, lookup):
+    """Requirement types belong to a course in a specific degree, never to a cluster."""
+    codes = {c["code"]: c for c in degree["courses"]}
+    choice_by_code = {
+        code: (group["name"], group.get("course_sources", {}).get(code, group.get("source", plan["source"])))
+        for group in plan.get("choices", []) for code in group.get("courses", [])
+    }
+    required = plan.get("required", {})
+    unknown_codes = (required.keys() | choice_by_code.keys()) - codes.keys()
+    if unknown_codes:
+        raise ValueError(f"{degree['name']}: review has unknown codes: {', '.join(sorted(unknown_codes))}")
+    rank = {"mandatory": 2, "elective": 1, "unverified": 0}
+    entries = {}
+    for code, course in codes.items():
+        sid = lookup(code)
+        if sid is None:
+            if code in required or code in choice_by_code or course.get("requirement"):
+                raise ValueError(f"{degree['name']}: sourced course {code} is unmapped")
+            continue
+        entry = {"subject": sid, "semester": None, "kind": "unverified"}
+        if code in required:
+            entry.update(kind="mandatory", semester=required[code], source=plan["source"])
+        elif code in choice_by_code:
+            group, source = choice_by_code[code]
+            entry.update(kind="elective", group=group, source=source)
+        elif not plan and (requirement := course.get("requirement")) and requirement.get("source"):
+            entry.update(requirement)
+            if entry["kind"] == "mandatory":
+                entry["semester"] = course.get("semester")
+        old = entries.get(sid)
+        if old and old.get("source") and entry.get("source"):
+            raise ValueError(f"{degree['name']}: distinct sourced courses share {sid}; review its aliases")
+        if old is None or rank[entry["kind"]] > rank[old["kind"]]:
+            entries[sid] = entry
+    return sorted(entries.values(), key=lambda e: (-rank[e["kind"]], e["semester"] or 999, e["subject"]))
+
+
+def degree_record(did, degree, entries, plan):
+    record = {"id": did, "title": degree["name"], "level": degree["level"], "subjects": entries}
+    source = plan.get("source") or degree.get("curriculum_source")
+    choices = plan.get("choices", degree.get("choices", []))
+    if source:
+        record["curriculum_source"] = source
+    if choices:
+        record["choices"] = [{k: v for k, v in g.items() if k not in {"courses", "course_sources"}} for g in choices]
+    return record
+
+
+def curriculum():
+    """Migrate degree metadata without rewriting course notes, aliases or prerequisites."""
+    plans = curriculum_plans()
+    subject_dir = root / "data/subjects"
+    metas = {p.parent.name: load(p) for p in subject_dir.glob("*/meta.json")}
+    alias_ids = {}
+    for sid, meta in metas.items():
+        for alias in meta["aliases"]:
+            if alias.get("code"):
+                alias_ids.setdefault((alias["university"].lower().split()[0], alias["code"]), sid)
+    records, created, revised = {}, set(), set()
+    universities = unis()
+    for uni in universities:
+        uid = uni["university"].lower().split()[0]
+        for degree in uni["degrees"]:
+            did = degree_id(uid, degree)
+            plan = plans.get(did, {})
+            assignments = plan.get("subject_assignments", {})
+            extra_codes = {c["code"] for c in plan.get("extra_courses", [])}
+            for course in (c for c in degree["courses"] if c["code"] in assignments or c["code"] in extra_codes):
+                code = course["code"]
+                key = (uid, code)
+                prior = alias_ids.get(key)
+                target = assignments.get(code)
+                if prior is not None and (target is None or prior == target):
+                    continue
+                base = slug(course["title"])
+                sid = target or (base if base not in metas else f"{base}-{uid}-{slug(code)}")
+                if sid not in metas and (subject_dir / sid).exists():
+                    raise ValueError(f"{sid}: resolve the new course ID before migrating")
+                if prior is not None:
+                    old = metas[prior]
+                    aliases = [a for a in old["aliases"]
+                               if (a["university"].lower().split()[0], a.get("code")) != key]
+                    if not aliases:
+                        raise ValueError(f"{prior}: preserve the existing ID for this single-course subject")
+                    old["aliases"] = aliases
+                    revised.add(prior)
+                alias_ids[key] = sid
+                alias = {"university": uni["university"], "code": code, "name": course["title"]}
+                if sid in metas:
+                    metas[sid]["aliases"].append(alias)
+                    revised.add(sid)
+                    continue
+                metas[sid] = {
+                    "id": sid, "title": course["title"], "summary": course["description"],
+                    "aliases": [alias],
+                    "prerequisites": [], "degrees": [],
+                    "levels": {f"L{n}": {"state": "none"} for n in range(4)},
+                }
+                created.add(sid)
+    for uni in universities:
+        uid = uni["university"].lower().split()[0]
+        for degree in uni["degrees"]:
+            if not degree["courses"]:
+                continue
+            did = degree_id(uid, degree)
+            plan = plans.get(did, {})
+            entries = curriculum_entries(degree, plan, lambda code: alias_ids.get((uid, code)))
+            records[did] = degree_record(did, degree, entries, plan)
+    # Legacy demo and imported degree files may have no raw university record.
+    for path in (root / "data/degrees").glob("*.json"):
+        if path.stem in records:
+            continue
+        record = load(path)
+        changed = False
+        for entry in record["subjects"]:
+            if not entry.get("source") and (entry["kind"] != "unverified" or entry.get("semester") is not None):
+                entry.update(kind="unverified", semester=None)
+                changed = True
+        if changed:
+            records[record["id"]] = record
+    membership = defaultdict(list)
+    for did, record in records.items():
+        for entry in record["subjects"]:
+            membership[entry["subject"]].append({"degree": did, "kind": entry["kind"]})
+    for sid, meta in metas.items():
+        old = meta["degrees"]
+        new = sorted([r for r in old if r["degree"] not in records] + membership[sid], key=lambda r: r["degree"])
+        folder = subject_dir / sid
+        if sid in created:
+            (folder / "figures").mkdir(parents=True)
+            save(folder / "sources.json", [])
+        if sid in created or sid in revised or old != new:
+            meta["degrees"] = new
+            save(folder / "meta.json", meta)
+    for did, record in records.items():
+        save(root / "data/degrees" / f"{did}.json", record)
+    print(f"{len(records)} degree plans updated, {len(created)} sourced subjects added, study notes preserved")
+
+
 DOMAINS = [
     ("computing", r"comput|data science|cyber|informatics|artificial intel|robotic"),
     ("engineering", r"engineering|architecture|aerospace|materials|mechanic|electr|nuclear|space|process"),
@@ -155,29 +320,52 @@ def domain_of(title):
 
 def assemble():
     cs = courses()
+    plans = curriculum_plans()
+    assignments = {
+        f"{did.split('-')[0]}:{code}": sid
+        for did, plan in plans.items()
+        for code, sid in plan.get("subject_assignments", {}).items()
+    }
     cl = load(work / "clusters.json")
     judged = load(work / "judged.json") if (work / "judged.json").exists() else {}
-    sets = [s for g in cl["multi"] for s in judged.get("|".join(sorted(g)), [[k] for k in g])]
-    sets += [[k] for k in cl["single"]]
-    # same title = same subject at L0 granularity (joint listings, per-degree variants, generic studios/theses)
-    by_title = {}
-    merged = []
-    for s in sets:
-        nt = re.sub(r"[^a-z0-9]+", " ", cs[s[0]]["title"].lower()).strip()
-        if nt in by_title:
-            by_title[nt].extend(s)
+    sets = []
+    used = set()
+    for group in cl["multi"]:
+        for part in judged.get(judgment_key(group), [[k] for k in group]):
+            current = [k for k in dict.fromkeys(part) if k in cs and k not in used and k not in assignments]
+            if current:
+                sets.append(current)
+                used.update(current)
+    mapped = defaultdict(list)
+    for key in cs.keys() - used:
+        if key in assignments:
+            mapped[assignments[key]].append(key)
         else:
-            by_title[nt] = s
-            merged.append(s)
-    sets = merged
-    # prefer the first listed university's title as the canonical one
+            sets.append([key])
+    sets.extend(mapped.values())
+    # A reviewed partition must not be re-merged by title. Preserve IDs by exact
+    # upstream aliases so a later split cannot rename or overwrite old notes.
+    reserved = {p.parent.name: load(p) for p in (root / "data/subjects").glob("*/meta.json")}
+    old_keys = defaultdict(set)
+    for sid, meta in reserved.items():
+        for alias in meta["aliases"]:
+            if alias.get("code"):
+                old_keys[f"{alias['university'].lower().split()[0]}:{alias['code']}"].add(sid)
+    def overlap(group):
+        return Counter(sid for key in group for sid in old_keys[key])
+    sets.sort(key=lambda group: (-max(overlap(group).values(), default=0), sorted(group)))
     ids, key2id = {}, {}
     for s in sets:
         s.sort()
         base = slug(cs[s[0]]["title"])
-        sid, n = base, 2
-        while sid in ids:
-            sid, n = f"{base}-{n}", n + 1
+        sid = assignments.get(s[0])
+        if sid is None:
+            choices = sorted(overlap(s).items(), key=lambda x: (-x[1], x[0]))
+            sid = next((x for x, _ in choices if x not in ids and x not in assignments.values()), None)
+        if sid is None:
+            sid, n = base, 2
+            while sid in ids or sid in reserved or sid in assignments.values():
+                sid, n = f"{base}-{n}", n + 1
         ids[sid] = s
         for k in s:
             key2id[k] = sid
@@ -194,17 +382,12 @@ def assemble():
     sdeg = defaultdict(dict)  # subject -> degree id -> kind
     deg_files = {}
     for uid, u, d in degs:
-        did = f"{uid}-{d['level'].lower()}-{slug(d['name'])}"
-        subs = {}
-        for c in d["courses"]:
-            sid = key2id[f"{uid}:{c['code']}"]
-            kind = "mandatory" if c.get("mandatory") else "elective"
-            if subs.get(sid, {}).get("kind") != "mandatory":
-                subs[sid] = {"kind": kind, "semester": c.get("semester")}
-        deg_files[did] = (d, subs)
-        for sid, v in subs.items():
-            if sdeg[sid].get(did) != "mandatory":
-                sdeg[sid][did] = v["kind"]
+        did = degree_id(uid, d)
+        plan = plans.get(did, {})
+        entries = curriculum_entries(d, plan, lambda code: key2id[f"{uid}:{code}"])
+        deg_files[did] = degree_record(did, d, entries, plan)
+        for entry in entries:
+            sdeg[entry["subject"]][did] = entry["kind"]
     prereq = defaultdict(set)
     for k, c in cs.items():
         for p in c.get("prerequisites", []):
@@ -216,7 +399,7 @@ def assemble():
         for pk in ps:
             if k in key2id and pk in key2id and key2id[pk] != key2id[k]:
                 prereq[key2id[k]].add(key2id[pk])
-    cur_f = root / "data/curated_prerequisites.json"  # hand/agent-curated links, {subject: [prerequisite ids]}
+    cur_f = repo / "data/curated_prerequisites.json"  # hand/agent-curated links, {subject: [prerequisite ids]}
     for sid, ps in (load(cur_f) if cur_f.exists() else {}).items():
         if sid in ids:
             prereq[sid].update(x for x in ps if x in ids and x != sid)
@@ -262,16 +445,15 @@ def assemble():
         levels = old["levels"] if old else {f"L{n}": {"state": "none"} for n in range(4)}
         rep = cs[members[0]]
         new_aliases = [{"name": cs[k]["title"], "university": cs[k]["uni"], "code": cs[k]["code"]} for k in members]
-        if old and old["aliases"] != new_aliases and levels["L0"]["state"] == "done":
-            levels["L0"] = {"state": "none"}  # members changed: rewrite L0 from all of them
-            (root / "data/subjects" / sid / "L0.md").unlink(missing_ok=True)
         save_meta = {
             "id": sid,
             "title": rep["title"],
             "aliases": new_aliases,
             "summary": rep["description"] or rep["title"],
             "prerequisites": sorted(prereq[sid]),
-            "degrees": [{"degree": d, "kind": k} for d, k in sorted(sdeg[sid].items())],
+            "degrees": [r for r in old["degrees"] if r["degree"] not in deg_files] +
+                       [{"degree": d, "kind": k} for d, k in sorted(sdeg[sid].items())] if old else
+                       [{"degree": d, "kind": k} for d, k in sorted(sdeg[sid].items())],
             "levels": levels,
         }
         folder.mkdir(parents=True, exist_ok=True)
@@ -279,32 +461,27 @@ def assemble():
         if not (folder / "sources.json").exists():
             (folder / "sources.json").write_text("[]\n")
         save(mf, save_meta)
-    orphans = work / "orphans"
-    for d in (root / "data/subjects").iterdir():
-        if d.is_dir() and d.name not in ids and d.name != "control-theory":
-            orphans.mkdir(exist_ok=True)
-            d.rename(orphans / d.name)
-    # degrees (semester: given, else depth in the prerequisite graph restricted to the degree)
+    for sid in reserved.keys() - ids.keys():
+        previous = reserved[sid]
+        remaining = [r for r in previous["degrees"] if r["degree"] not in deg_files]
+        if remaining != previous["degrees"]:
+            previous["degrees"] = remaining
+            save(root / "data/subjects" / sid / "meta.json", previous)
+    # Catalog semesters are nullable. Dependency depth is not a catalog term.
     dom = defaultdict(list)
-    for did, (d, subs) in deg_files.items():
-        depth = {}
-
-        def dp(s, seen=()):
-            if s in depth:
-                return depth[s]
-            r = 1 + max((dp(p, seen + (s,)) for p in prereq[s] if p in subs and p not in seen), default=0)
-            depth[s] = r
-            return r
-
-        entries = [{"subject": s, "semester": v["semester"] or dp(s), "kind": v["kind"]}
-                   for s, v in sorted(subs.items())]
-        lvl = d["level"]
-        save(root / "data/degrees" / f"{did}.json", {"id": did, "title": d["name"], "level": lvl, "subjects": entries})
-        dom[domain_of(d["name"])].append(did)
+    for did, record in deg_files.items():
+        save(root / "data/degrees" / f"{did}.json", record)
+        dom[domain_of(record["title"])].append(did)
     for dn, dl in dom.items():
-        save(root / "data/domains" / f"{dn}.json", {"id": dn, "title": dn.replace("-", " ").title(), "degrees": sorted(dl)})
+        f = root / "data/domains" / f"{dn}.json"
+        if root != repo and f.exists():  # a profile keeps the shipped domain lists and only adds its degrees
+            dl = [*dl, *load(f).get("degrees", [])]
+        save(f, {"id": dn, "title": dn.replace("-", " ").title(), "degrees": sorted(set(dl))})
     print(f"{len(ids)} subjects, {len(deg_files)} degrees, {len(dom)} domains")
 
 
 if __name__ == "__main__":
-    {"cluster": cluster, "judge": judge, "assemble": assemble}[sys.argv[1]]()
+    steps = {"cluster": cluster, "judge": judge, "assemble": assemble, "curriculum": curriculum}
+    if len(sys.argv) != 2 or sys.argv[1] not in steps:
+        sys.exit("usage: python scripts/mapper.py {" + "|".join(steps) + "}")
+    steps[sys.argv[1]]()
