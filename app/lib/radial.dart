@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui' show lerpDouble;
 
@@ -122,14 +123,15 @@ class RadialPage extends ConsumerWidget {
         TextButton(onPressed: () => context.push('/list'), child: const Text('List view')),
       ]),
       body: Row(children: [
-        Expanded(child: AtlasBody((a) => a.subjects.isEmpty
-            ? Stack(children: [_RadialView(atlas: a), const Align(alignment: Alignment.bottomCenter, child: EmptyProfileHint())])
-            : _RadialView(atlas: a))),
+        Expanded(child: AtlasBody((a) => _hasContent(a) ? _RadialView(atlas: a) : const EmptyProfileHint())),
         if (open) const AgentPanel(),
       ]),
     );
   }
 }
+
+/// True once some degree has at least one named subject; an empty profile shows no graph at all.
+bool _hasContent(Atlas a) => a.degrees.any((g) => g.requiredCourses.any((e) => a.subjects.containsKey(e['subject'])));
 
 class _RadialView extends ConsumerStatefulWidget {
   const _RadialView({required this.atlas});
@@ -145,6 +147,14 @@ class _RadialViewState extends ConsumerState<_RadialView> with TickerProviderSta
   late final emblem = AnimationController(vsync: this, duration: const Duration(milliseconds: 440), value: 1);
   late final settle = AnimationController(vsync: this, duration: const Duration(milliseconds: 220), value: 1);
   late final flip = AnimationController(vsync: this, duration: const Duration(milliseconds: 260), value: 1);
+  // intro after an empty profile got its first content: You, domains, degree, courses, then the "Start here" note
+  late final intro = AnimationController(vsync: this, duration: const Duration(milliseconds: 800), value: 1);
+  late final note = AnimationController(vsync: this, duration: const Duration(milliseconds: 2400), value: 0);
+  late final idle = AnimationController(vsync: this, duration: const Duration(seconds: 6));
+  int revealStage = 4; // 0 you, 1 domains, 2 degree, 3 courses, 4 done
+  bool startHint = false;
+  String? _startKey;
+  final _revealTimers = <Timer>[];
   final view = TransformationController();
   final paperDrag = ValueNotifier(Offset.zero);
   final deskActivity = ValueNotifier(0);
@@ -152,7 +162,7 @@ class _RadialViewState extends ConsumerState<_RadialView> with TickerProviderSta
   final _cardKey = GlobalKey();
   final _readFocus = FocusNode();
   final _tp = <String, TextPainter>{};
-  late final _graphMotion = Listenable.merge([move, prog, pick, emblem]);
+  late final _graphMotion = Listenable.merge([move, prog, pick, emblem, intro, note, idle]);
   late final _cardMotion = Listenable.merge([view, move, pick]);
 
   late _N root;
@@ -180,11 +190,60 @@ class _RadialViewState extends ConsumerState<_RadialView> with TickerProviderSta
   @override
   void initState() {
     super.initState();
+    final reduce = WidgetsBinding.instance.platformDispatcher.accessibilityFeatures.disableAnimations;
+    final playIntro = emptyProfileShown && !reduce;
+    emptyProfileShown = false;
+    if (playIntro) {
+      level = _levels.firstWhere(
+          (l) => widget.atlas.degrees.any((g) => g.level == l && g.requiredCourses.isNotEmpty),
+          orElse: () => 'BSc');
+      revealStage = 0;
+      intro.value = 0;
+    }
+    if (!reduce) idle.repeat();
     _build();
     to = _layout();
     from = to;
     vis = to.keys.map((k) => byKey[k]!).toList();
     fracFrom = fracTo = _fractions(ref.read(progressProvider));
+    if (playIntro) _startIntro();
+  }
+
+  void _startIntro() {
+    final dom = root.kids.where((d) => d.kids.isNotEmpty).firstOrNull;
+    final deg = dom?.kids.firstOrNull;
+    void at(int ms, VoidCallback f) => _revealTimers.add(Timer(Duration(milliseconds: ms), () {
+          if (mounted) f();
+        }));
+    intro.forward(from: 0);
+    at(1000, () {
+      revealStage = 1;
+      _relayout();
+    });
+    at(2500, () {
+      revealStage = 2;
+      openDomain = dom?.key;
+      _relayout();
+    });
+    at(4000, () {
+      revealStage = 3;
+      openDegree = deg?.key;
+      _relayout();
+    });
+    at(5600, () {
+      revealStage = 4;
+      _startKey = vis.where((n) => n.sid != null).firstOrNull?.key;
+      startHint = _startKey != null;
+      if (startHint) note.forward(from: 0);
+      setState(() {});
+    });
+  }
+
+  /// Subtle idle drift so the map never sits perfectly still.
+  _P _bob(_N n, _P p) {
+    if (n.level == 0 || reducedMotion) return p;
+    final ph = idle.value * 2 * math.pi + (n.key.hashCode % 628) / 100;
+    return _P(p.a + .0012 * math.cos(ph), p.r + 1.5 * math.sin(ph));
   }
 
   @override
@@ -206,6 +265,9 @@ class _RadialViewState extends ConsumerState<_RadialView> with TickerProviderSta
     super.didChangeDependencies();
     reducedMotion = MediaQuery.disableAnimationsOf(context);
     if (reducedMotion) {
+      idle.stop();
+      revealStage = 4;
+      intro.value = 1;
       for (final animation in [move, prog, pick, emblem, settle, flip]) {
         animation.value = 1;
       }
@@ -224,6 +286,12 @@ class _RadialViewState extends ConsumerState<_RadialView> with TickerProviderSta
     paperDrag.dispose();
     deskActivity.dispose();
     doodleReplay.dispose();
+    for (final timer in _revealTimers) {
+      timer.cancel();
+    }
+    intro.dispose();
+    note.dispose();
+    idle.dispose();
     _readFocus.dispose();
     for (final text in _tp.values) {
       text.dispose();
@@ -331,7 +399,7 @@ class _RadialViewState extends ConsumerState<_RadialView> with TickerProviderSta
     setState(() => fitted = false);
   }
 
-  bool _open(_N n) => n.level == 0 || n.key == openDomain || n.key == openDegree;
+  bool _open(_N n) => n.level == 0 ? revealStage >= 1 : n.key == openDomain || n.key == openDegree;
 
   Iterable<_N> _visibleChildren(_N n) {
     if (n.level != 2) return n.kids;
@@ -498,6 +566,8 @@ class _RadialViewState extends ConsumerState<_RadialView> with TickerProviderSta
 
   // ---- interaction ----
   void _tap(Offset p) {
+    if (revealStage < 4) return;
+    startHint = false;
     _N? best;
     var bestD = double.infinity;
     for (final n in vis) {
@@ -1064,7 +1134,7 @@ class _AtlasPainter extends CustomPainter {
     for (final r in _radius.skip(1).take(2)) {
       canvas.drawCircle(_centre, r, _guide);
     }
-    final pos = {for (final n in s.vis) n.key: s._cur(n)};
+    final pos = {for (final n in s.vis) n.key: s._bob(n, s._cur(n))};
     final selectedSid = s.byKey[s.selected]?.sid;
     final prereqs = s.prerequisites;
     final dependents = s.unlocks;
@@ -1112,7 +1182,7 @@ class _AtlasPainter extends CustomPainter {
       final c = p.xy;
       final f = s._frac(n.key);
       final col = n.color;
-      final amount = s._ink(n);
+      final amount = n.level == 0 ? s.intro.value : s._ink(n);
       if (amount == 0) continue;
       if (n.level == 3) {
         if (n.sid == null) {
@@ -1144,7 +1214,7 @@ class _AtlasPainter extends CustomPainter {
         }
         continue;
       }
-      final r = const [46.0, 34.0, 7.0][n.level];
+      final r = const [46.0, 34.0, 7.0][n.level] + (n.level == 0 && !s.reducedMotion ? 1.4 * math.sin(s.idle.value * 2 * math.pi) : 0);
       canvas.drawCircle(c, r, Paint()..color = (n.level == 1 ? Color.alphaBlend(col.withValues(alpha: 0.12), HouseStyle.paper) : HouseStyle.paper).withValues(alpha: amount));
       canvas.drawCircle(
           c,
@@ -1182,6 +1252,13 @@ class _AtlasPainter extends CustomPainter {
             n.key == s.openDomain ? s.emblem.value : 1);
         _centred(canvas, c, n.label, 10.5, Color.alphaBlend(Colors.black54, col), 62,
             dy: art ? 11 : 0, bold: true);
+        if (activeProfile != null && n.kids.isNotEmpty) {
+          // a dot marks the domain that holds content
+          final pulse = s.reducedMotion ? 0.0 : 1.2 * math.sin(s.idle.value * 2 * math.pi * 2);
+          final spot = c + Offset(r * .74, -r * .74);
+          canvas.drawCircle(spot, 6.5 + pulse, Paint()..color = HouseStyle.paper);
+          canvas.drawCircle(spot, 4.8 + pulse, Paint()..color = col);
+        }
       } else {
         final open = n.key == s.openDegree;
         if (amount > .40) {
@@ -1190,6 +1267,56 @@ class _AtlasPainter extends CustomPainter {
         }
       }
     }
+    final target = s._startKey;
+    if (s.startHint && target != null && pos.containsKey(target)) _startHere(canvas, pos[target]!);
+  }
+
+  /// Handwritten "Start here" with an underline that turns into an arrow pointing at the first course.
+  void _startHere(Canvas canvas, _P p) {
+    final t = s.note.value;
+    if (t <= 0) return;
+    final c = p.xy;
+    final d = Offset(math.cos(p.a), math.sin(p.a));
+    final side = Offset(-d.dy, d.dx);
+    final tp = TextPainter(
+      text: TextSpan(
+          text: 'Start here',
+          style: TextStyle(fontFamily: HouseStyle.handwriting, fontSize: 27, fontWeight: FontWeight.w700, color: HouseStyle.binder)),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    final centre = c - d * 150 + side * 34;
+    final box = Rect.fromCenter(center: centre, width: tp.width, height: tp.height);
+    final sway = t >= 1 && !s.reducedMotion ? math.sin(s.idle.value * 2 * math.pi * 2) : 0.0;
+    canvas.save();
+    canvas.translate(d.dx * sway * 3, d.dy * sway * 3);
+    // the words are written left to right
+    final write = const Interval(0, .5, curve: Curves.easeInOut).transform(t);
+    canvas.save();
+    canvas.clipRect(Rect.fromLTWH(box.left - 6, box.top - 6, (box.width + 12) * write, box.height + 12));
+    tp.paint(canvas, box.topLeft);
+    canvas.restore();
+    // underline, then a curve ending in an arrowhead at the course
+    final start = Offset(box.left, box.bottom - 2), mid = Offset(box.right, box.bottom + 1);
+    final end = c - d * 17;
+    final path = Path()
+      ..moveTo(start.dx, start.dy)
+      ..quadraticBezierTo(box.center.dx, box.bottom + 7, mid.dx, mid.dy);
+    final run = end - mid;
+    final bend = Offset(-run.dy, run.dx) / math.max(1, run.distance);
+    path.cubicTo(mid.dx + run.dx * .35 + bend.dx * 22, mid.dy + run.dy * .35 + bend.dy * 22,
+        mid.dx + run.dx * .7 - bend.dx * 12, mid.dy + run.dy * .7 - bend.dy * 12, end.dx, end.dy);
+    final line = path.computeMetrics().first;
+    final draw = const Interval(.45, 1, curve: Curves.easeInOut).transform(t);
+    canvas.drawPath(line.extractPath(0, line.length * draw), _stroke(HouseStyle.binder, 2.4));
+    if (draw > .97) {
+      final tip = line.getTangentForOffset(line.length)!;
+      final fwd = tip.vector;
+      for (final turn in [-.5, .5]) {
+        final wing = Offset(fwd.dx * math.cos(turn) - fwd.dy * math.sin(turn), fwd.dx * math.sin(turn) + fwd.dy * math.cos(turn));
+        canvas.drawLine(tip.position, tip.position - wing * 11, _stroke(HouseStyle.binder, 2.4));
+      }
+    }
+    canvas.restore();
   }
 
   Paint _stroke(Color color, double width) => Paint()

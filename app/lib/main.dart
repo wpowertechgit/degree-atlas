@@ -268,6 +268,7 @@ class App extends StatelessWidget {
       dividerColor: HouseStyle.pageEdge,
     );
     return MaterialApp.router(
+      scaffoldMessengerKey: messengerKey,
         title: 'Degree Atlas', theme: theme, routerConfig: _router, debugShowCheckedModeBanner: false);
   }
 }
@@ -577,10 +578,11 @@ class SubjectPage extends ConsumerWidget {
 }
 
 class Md extends StatelessWidget {
-  const Md(this.data, this.dir, {super.key, this.courseTitle});
+  const Md(this.data, this.dir, {super.key, this.courseTitle, this.selectable = true});
   final String data;
   final Directory dir;
   final String? courseTitle;
+  final bool selectable; // false when an enclosing SelectionArea handles selection
 
   String get _body {
     final title = courseTitle;
@@ -598,7 +600,7 @@ class Md extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MarkdownBody(
         data: _body,
-        selectable: true,
+        selectable: selectable,
         builders: {'latex': LatexElementBuilder()},
         extensionSet: md.ExtensionSet([...md.ExtensionSet.gitHubFlavored.blockSyntaxes, LatexBlockSyntax()],
             [...md.ExtensionSet.gitHubFlavored.inlineSyntaxes, LatexInlineSyntax()]),

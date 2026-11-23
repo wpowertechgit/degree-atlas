@@ -51,23 +51,65 @@ void createProfile(String name) {
   }
 }
 
-/// Deletes a profile folder with everything in it and falls back to the default data set.
-void deleteProfile(String name) {
-  final d = Directory(p.join(_profilesDir().path, name));
-  if (d.existsSync()) d.deleteSync(recursive: true);
+/// Shown from anywhere, also after the widget tree was rebuilt by a profile switch.
+final messengerKey = GlobalKey<ScaffoldMessengerState>();
+
+void _say(String text) => messengerKey.currentState
+  ?..hideCurrentSnackBar()
+  ..showSnackBar(SnackBar(content: Text(text)));
+
+/// Windows refuses to rename or delete a folder that a process still holds open (the file watcher, the agent).
+/// Switching to the default data set first disposes all of them.
+Future<void> _release() async {
   switchProfile(null);
+  await Future<void>.delayed(const Duration(milliseconds: 600));
 }
 
-/// Renames a profile folder; the active profile stays active under its new name.
-void renameProfile(String from, String to) {
-  Directory(p.join(_profilesDir().path, from)).renameSync(p.join(_profilesDir().path, to));
-  switchProfile(to);
+Future<void> _retry(void Function() op) async {
+  for (var i = 0;; i++) {
+    try {
+      op();
+      return;
+    } on FileSystemException {
+      if (i == 5) rethrow;
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+    }
+  }
+}
+
+/// Renames a profile folder and opens it under its new name.
+Future<void> renameProfile(String from, String to) async {
+  await _release();
+  try {
+    await _retry(() => Directory(p.join(_profilesDir().path, from)).renameSync(p.join(_profilesDir().path, to)));
+    switchProfile(to);
+  } on FileSystemException catch (e) {
+    switchProfile(from);
+    _say('Rename failed: ${e.osError?.message ?? e.message}');
+  }
+}
+
+/// Deletes a profile folder with everything in it and stays on the default data set.
+Future<void> deleteProfile(String name) async {
+  await _release();
+  try {
+    await _retry(() {
+      final d = Directory(p.join(_profilesDir().path, name));
+      if (d.existsSync()) d.deleteSync(recursive: true);
+    });
+  } on FileSystemException catch (e) {
+    _say('Delete failed: ${e.osError?.message ?? e.message}');
+  }
 }
 
 /// Bumped on every switch; [ProfileScope] rebuilds all providers (and stops the agent process) when it changes.
 final _reload = ValueNotifier<int>(0);
 
+/// Set while the empty-profile hint is on screen; the atlas then plays its intro when content arrives.
+bool emptyProfileShown = false;
+
 void switchProfile(String? name) {
+  emptyProfileShown = false;
   activeProfile = name;
   _profilesDir().createSync(recursive: true);
   _activeFile().writeAsStringSync(name ?? '');
@@ -116,7 +158,11 @@ class ProfileMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final names = listProfiles();
+    // listens to profile switches so the label follows, and reads the folders each time the menu opens
+    return ValueListenableBuilder<int>(valueListenable: _reload, builder: (_, _, _) => _menu(context));
+  }
+
+  Widget _menu(BuildContext context) {
     return PopupMenuButton<String>(
       tooltip: 'Profile',
       onSelected: (v) {
@@ -131,7 +177,7 @@ class ProfileMenu extends StatelessWidget {
         }
       },
       itemBuilder: (_) => [
-        for (final n in ['', ...names])
+        for (final n in ['', ...listProfiles()])
           CheckedPopupMenuItem(value: n, checked: (activeProfile ?? '') == n, child: Text(n.isEmpty ? 'default' : n)),
         const PopupMenuDivider(),
         const PopupMenuItem(value: '\u0000new', child: Text('New empty profile…')),
@@ -189,25 +235,34 @@ class _NewProfileDialogState extends State<_NewProfileDialog> {
   }
 }
 
-/// Shown instead of the atlas while a profile has no subjects.
-class EmptyProfileHint extends ConsumerWidget {
+/// Shown instead of the atlas while a profile has no content.
+class EmptyProfileHint extends ConsumerStatefulWidget {
   const EmptyProfileHint({super.key});
   @override
-  Widget build(BuildContext context, WidgetRef ref) => Center(
+  ConsumerState<EmptyProfileHint> createState() => _EmptyProfileHintState();
+}
+
+class _EmptyProfileHintState extends ConsumerState<EmptyProfileHint> {
+  @override
+  void initState() {
+    super.initState();
+    emptyProfileShown = true;
+  }
+
+  @override
+  Widget build(BuildContext context) => Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 420),
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             const Text('Nothing here yet', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             const Text(
-                'Open the agent and tell it what you want to learn, for example “I want to learn material science”. '
-                'It looks up real degree programs, builds the subjects and writes the levels.',
+                'Open the agent and tell it what you want to learn, for example "I want to learn material science". '
+                'It looks up the real curriculum, builds the subjects and writes the levels. The map appears when it is done.',
                 textAlign: TextAlign.center),
             const SizedBox(height: 16),
             FilledButton(
-              onPressed: () {
-                ref.read(agentOpenProvider.notifier).set(true);
-              },
+              onPressed: () => ref.read(agentOpenProvider.notifier).set(true),
               child: const Text('Open agent'),
             ),
           ]),

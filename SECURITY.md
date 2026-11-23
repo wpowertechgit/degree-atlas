@@ -1,8 +1,8 @@
 # Security
 
-## Reporting a vulnerability
+## Reporting a problem
 
-Please report security problems privately through GitHub's **Report a vulnerability** button on the repository's Security tab, not in a public issue. Include what you found, how to reproduce it and the impact. Expect a first reply within a week.
+Just open an issue on the repository. Include what you found, how to reproduce it and what the impact is. Please don't paste private files, credentials or personal data in the issue.
 
 ## Things to know before you run it
 

@@ -190,7 +190,7 @@ def curriculum_entries(degree, plan, lookup):
             group, source = choice_by_code[code]
             entry.update(kind="elective", group=group, source=source)
         elif not plan and (requirement := course.get("requirement")) and requirement.get("source"):
-            entry.update(requirement)
+            entry.update({k: v for k, v in requirement.items() if k != "quote"})  # the quote stays in the university file
             if entry["kind"] == "mandatory":
                 entry["semester"] = course.get("semester")
         old = entries.get(sid)
@@ -381,11 +381,14 @@ def assemble():
                 degs.append((uid, u, d))
     sdeg = defaultdict(dict)  # subject -> degree id -> kind
     deg_files = {}
+    chosen_domain = {}  # degree id -> domain id classified by the agent in the university file
     for uid, u, d in degs:
         did = degree_id(uid, d)
         plan = plans.get(did, {})
         entries = curriculum_entries(d, plan, lambda code: key2id[f"{uid}:{code}"])
         deg_files[did] = degree_record(did, d, entries, plan)
+        if d.get("domain"):
+            chosen_domain[did] = d["domain"]
         for entry in entries:
             sdeg[entry["subject"]][did] = entry["kind"]
     prereq = defaultdict(set)
@@ -469,15 +472,33 @@ def assemble():
             save(root / "data/subjects" / sid / "meta.json", previous)
     # Catalog semesters are nullable. Dependency depth is not a catalog term.
     dom = defaultdict(list)
+    known_domains = {f.stem for f in (root / "data/domains").glob("*.json")}  # before this run writes anything
     for did, record in deg_files.items():
         save(root / "data/degrees" / f"{did}.json", record)
-        dom[domain_of(record["title"])].append(did)
+        dom[chosen_domain.get(did) or domain_of(record["title"])].append(did)  # the keyword guess is only the fallback for old data
     for dn, dl in dom.items():
+        if root != repo and dn not in known_domains:
+            continue  # a profile never invents domains; the check below reports it
         f = root / "data/domains" / f"{dn}.json"
         if root != repo and f.exists():  # a profile keeps the shipped domain lists and only adds its degrees
             dl = [*dl, *load(f).get("degrees", [])]
         save(f, {"id": dn, "title": dn.replace("-", " ").title(), "degrees": sorted(set(dl))})
     print(f"{len(ids)} subjects, {len(deg_files)} degrees, {len(dom)} domains")
+    if root != repo:  # a personal profile must rest on verified plan evidence
+        import check_plan
+
+        problems = check_plan.check(strict=True)
+        for did in deg_files:
+            dn = chosen_domain.get(did)
+            if dn not in known_domains:
+                problems.append(f"{did}: set `domain` on the degree in the university file to one of: "
+                                + ", ".join(sorted(known_domains)))
+        for did, record in deg_files.items():
+            if not any(e["kind"] == "mandatory" for e in record["subjects"]):
+                problems.append(f"{did}: no mandatory subjects; every entry is unverified, so the atlas will not show it")
+        if problems:
+            print(chr(10).join(problems))
+            sys.exit("Requirement evidence is missing or does not match the study-plan pages. See AGENTS.md (Verify the study plan first).")
 
 
 if __name__ == "__main__":

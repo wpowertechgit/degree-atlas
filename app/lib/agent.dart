@@ -319,11 +319,11 @@ class _AgentPanelState extends ConsumerState<AgentPanel> {
             margin: const EdgeInsets.only(left: 40, top: 6, bottom: 6),
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(color: const Color(0xFFF4DEDB), borderRadius: BorderRadius.circular(8)),
-            child: SelectableText(m.text, style: const TextStyle(fontSize: 13)),
+            child: Text(m.text, style: const TextStyle(fontSize: 13)),
           ),
         );
       case Role.assistant:
-        return Padding(padding: const EdgeInsets.symmetric(vertical: 6), child: Md(m.text, dataDir()));
+        return Padding(padding: const EdgeInsets.symmetric(vertical: 6), child: Md(m.text, dataDir(), selectable: false));
       case Role.tool:
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 2),
@@ -333,7 +333,7 @@ class _AgentPanelState extends ConsumerState<AgentPanel> {
       case Role.error:
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 6),
-          child: SelectableText(m.text, style: const TextStyle(fontSize: 12, color: accent)),
+          child: Text(m.text, style: const TextStyle(fontSize: 12, color: accent)),
         );
     }
   }
@@ -405,10 +405,10 @@ class _AgentPanelState extends ConsumerState<AgentPanel> {
                       style: TextStyle(color: Colors.black54, fontSize: 13)),
                 ))
               : SelectionArea(
-                  child: ListView(
+                  child: SingleChildScrollView(
                       controller: _scroll,
                       padding: const EdgeInsets.symmetric(horizontal: 14),
-                      children: [for (final m in s.msgs) _tile(m)])),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [for (final m in s.msgs) _tile(m)]))),
         ),
         if (s.busy) const LinearProgressIndicator(minHeight: 2),
         Padding(

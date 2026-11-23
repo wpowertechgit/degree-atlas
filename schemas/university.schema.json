@@ -15,6 +15,7 @@
           "name": {"type": "string"},
           "level": {"enum": ["BSc", "MSc", "PhD"]},
           "curriculum_source": {"type": "string", "pattern": "^https?://"},
+          "domain": {"type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"},
           "choices": {
             "type": "array",
             "items": {
@@ -49,7 +50,8 @@
                   "properties": {
                     "kind": {"enum": ["mandatory", "elective"]},
                     "source": {"type": "string", "pattern": "^https?://"},
-                    "group": {"type": "string", "minLength": 1}
+                    "group": {"type": "string", "minLength": 1},
+          "quote": {"type": "string", "minLength": 3}
                   }
                 },
                 "url": {"type": "string"}

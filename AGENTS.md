@@ -53,10 +53,10 @@ A profile is a separate data set in `profiles/<name>/` with its own `data/`, `wo
 
 When the user says what they want to learn (for example "I want to learn material science") in an empty or partial profile:
 
-1. Pick the matching domain in `data/domains/` and 1-3 degree programs from the universities in `catalogs.json` whose study plans cover the topic (use web search to find them; prefer a bachelor and, if the topic is advanced, a master).
-2. Get the course lists for those degrees only. If the repository's own `data/universities/<uni>.json` exists (local, gitignored), copy that file into the profile's `data/universities/` keeping its structure and `university` name but only the needed degrees (on Windows set `PYTHONUTF8=1` when reading these files from Python); otherwise run the scout (`.claude/agents/scout.md`). Then run `mapper.py cluster`, `judge` and `assemble` and `validate.py` as in Bootstrap. Never hand-write degree, subject or domain files for catalog degrees; the mapper builds them. `validate.py` must print `OK`; if it reports a prerequisite that does not exist in this profile, remove that id from the subject's `prerequisites` and validate again. The app picks up new files on its own.
+1. Work only from the web and the user's request. In an empty or partial profile, ignore every other folder on the disk (other profiles, the repository's own `data/`): never browse them for course lists. If the request names a program, vendor curriculum or certification (for example Cisco CCNA), go straight to its official curriculum and treat that program as the degree. Otherwise find 1-3 real degree programs whose study plans cover the topic (prefer a bachelor and, if the topic is advanced, a master; `catalogs.json` lists example universities). Decide the domain with the next section.
+2. Get the course lists for those degrees from the official sources with the scout rules (`.claude/agents/scout.md`); write `data/universities/<uni>.json` in the profile (on Windows set `PYTHONUTF8=1` when reading files from Python). Then run `mapper.py cluster`, `judge` and `assemble` and `validate.py` as in Bootstrap. Never hand-write degree, subject or domain files for catalog degrees; the mapper builds them. Verify the study plan first (see the next section). `assemble` refuses to finish in a profile until the evidence checks out. `validate.py` must print `OK`; if it reports a prerequisite that does not exist in this profile, remove that id from the subject's `prerequisites` and validate again. The app picks up new files on its own.
 3. Write L0 for every mandatory subject of the new degrees (`next.py L0 --degree <id> -n 10`, in batches), then tell the user what exists and offer L1.
-4. Do not narrate or report progress. When everything is written, answer with one short line saying what now exists.
+4. Do not narrate or report progress, and do not add caveats about verification or unverified data (fix the data instead). When everything is written, answer with one short line saying what now exists.
 
 ## Own course materials
 
@@ -69,6 +69,19 @@ The user can import their own course files (lecture notes, slides, problem sets,
 5. **L2: mastery of the user's course.** Follow the materials: their structure, notation, theorems, derivations and typical problem types, so the user can work through their own notes afterwards. Cite them in `sources.json` as `{"level":"L2","title":"...","file":"materials/<course>/<file>","pages":"12-18"}` (`file` replaces `url`; `pages` is free text, so a page range or a section name both work) and use the same inline `[n]` numbering as for web sources. Check the materials' own problems and statements before relying on them: if a question or solution is wrong or misleading, say so in the worked solution instead of copying the error. Use the web only to repair gaps or errors in the materials, and say so in the text.
 6. **Exercises.** Build them from the problem sets and past exams: the same style, difficulty and mix of types, with fully worked solutions. Change the numbers and wording so the user practises the method and not the memorised answer. Put the topic names in `concepts`.
 7. **Coverage.** In `index.json` fill each topic's `covered` with the levels that teach it. Every topic must be covered once L2 exists; `validate.py` checks this. End `L2.md` with one line naming topics that the materials mention but do not explain.
+
+## Verify the study plan first
+
+Requirements must come from the official study plan you actually read, and a script checks that. Before `mapper.py assemble`:
+
+1. Fetch and read the official plan page(s) for the degree. Save each as `work/pages/<name>.txt`: first line `URL: <the page url>`, then the page text as you read it.
+2. In `data/universities/<uni>.json`, give every course that the plan names a `requirement`: `kind` (`mandatory` for a named course every student takes, `elective` for a choice basket with `group`), `source` (the plan URL, exactly as in the cached file) and `quote` (the exact text of the plan that names the course, containing its code or title). Set `semester` only if the plan places the course in a term. Courses found only in the catalog get no requirement.
+3. Run `python scripts/check_plan.py`. It checks offline that each `source` is a cached page, each `quote` really occurs in that page and names the course. Fix every line it prints. Do not invent quotes; if the plan does not name a course, it has no requirement.
+4. Run `assemble`. In a profile it runs the same check and also fails if a degree ends up with no mandatory subject (every entry unverified, so the atlas would not show it). Go back to step 1 for that degree. If the plan truly has no named mandatory courses, say so to the user instead of guessing.
+
+## Choose the domain yourself
+
+You classify, not the mapper. For every degree in a university file set `domain` to the id of the domain it belongs to, picked by what is actually taught: one of the files in `data/domains/` (computing, engineering, natural-science, mathematics, social-science, humanities; networking and IT are computing). The mapper's keyword guess is only a fallback for old data, and in a profile `assemble` refuses to finish until every degree has a valid `domain`. The same goes for your own materials: put the `own-` degree in the domain file that fits the subject.
 
 ## Degree plans and clustering
 
