@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["id", "title", "level", "subjects"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {"type": "string"},
+    "title": {"type": "string"},
+    "level": {"enum": ["BSc", "MSc", "PhD"]},
+    "subjects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["subject", "semester", "kind"],
+        "additionalProperties": false,
+        "properties": {
+          "subject": {"type": "string"},
+          "semester": {"type": "integer", "minimum": 1},
+          "kind": {"enum": ["mandatory", "elective"]}
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+ "id": "humanities",
+ "title": "Humanities",
+ "degrees": [
+  "eth-bsc-interdisciplinary-sciences",
+  "eth-msc-biotechnology",
+  "eth-msc-energy-science-and-technology",
+  "eth-msc-history-and-philosophy-of-knowledge",
+  "eth-msc-integrated-building-systems",
+  "eth-msc-interdisciplinary-sciences",
+  "eth-msc-micro-and-nanosystems",
+  "eth-msc-science-education",
+  "eth-msc-spatial-development-and-infrastructure-systems",
+  "mit-bsc-art-and-design-course-4-b",
+  "mit-bsc-history-course-21h",
+  "mit-bsc-humanities-and-science-course-21s",
+  "mit-bsc-humanities-course-21",
+  "mit-bsc-linguistics-and-philosophy-course-24-2",
+  "mit-bsc-literature-course-21l",
+  "mit-bsc-music-course-21m",
+  "mit-bsc-philosophy-course-24-1",
+  "mit-bsc-theater-arts-course-21t",
+  "mit-bsc-writing-course-21w"
+ ]
+}

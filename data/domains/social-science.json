@@ -1,0 +1,20 @@
+{
+ "id": "social-science",
+ "title": "Social Science",
+ "degrees": [
+  "eth-bsc-public-policy",
+  "eth-msc-comparative-and-international-studies",
+  "eth-msc-management-technology-and-economics",
+  "eth-msc-quantitative-finance",
+  "eth-msc-science-technology-and-policy",
+  "mit-bsc-anthropology-course-21a",
+  "mit-bsc-business-analytics-course-15-2",
+  "mit-bsc-comparative-media-studies-cms",
+  "mit-bsc-economics-course-14-1",
+  "mit-bsc-finance-course-15-3",
+  "mit-bsc-global-studies-and-languages-course-21g",
+  "mit-bsc-management-course-15-1",
+  "mit-bsc-planning-course-11",
+  "mit-bsc-political-science-course-17"
+ ]
+}

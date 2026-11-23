@@ -1,0 +1,500 @@
+{
+ "a-window-onto-contemporary-french-society": [
+  "french-iv"
+ ],
+ "advanced-autonomous-robotic-systems": [
+  "robotics-science-and-systems"
+ ],
+ "advanced-communication-in-spanish-topics-in-language-and-cul": [
+  "spanish-iv"
+ ],
+ "advanced-econometrics": [
+  "econometric-data-science"
+ ],
+ "advanced-german-literature-and-culture": [
+  "german-iv"
+ ],
+ "advanced-macroeconomics": [
+  "microeconomics",
+  "principles-of-macroeconomics"
+ ],
+ "advanced-photography-and-related-media": [
+  "introduction-to-photography-and-related-media"
+ ],
+ "advanced-spanish-conversation-and-composition-perspectives-o": [
+  "spanish-iv"
+ ],
+ "advanced-visualization-architecture-in-motion-graphics": [
+  "design-through-computation-and-making"
+ ],
+ "aerodynamics": [
+  "unified-engineering-fluid-dynamics",
+  "unified-engineering-thermodynamics-and-propulsion"
+ ],
+ "algorithms-and-data-structures": [
+  "mathematics-for-computer-science"
+ ],
+ "amorphous-materials": [
+  "microstructural-evolution-in-materials"
+ ],
+ "analysis-ii": [
+  "analysis-iii"
+ ],
+ "aquatic-ecology-i": [
+  "aquatic-ecology-ii"
+ ],
+ "atmospheric-radiation-and-convection": [
+  "introduction-to-atmosphere-ocean-and-climate-dynamics"
+ ],
+ "baroque-and-classical-music": [
+  "harmony-and-counterpoint-i"
+ ],
+ "basic-themes-in-french-literature-and-culture": [
+  "french-iv"
+ ],
+ "bio-inspired-robotics": [
+  "control-systems-i"
+ ],
+ "biocompatible-materials": [
+  "thermodynamics-of-biomolecular-systems"
+ ],
+ "biomechanics-and-neural-control-of-movement": [
+  "control-systems-i"
+ ],
+ "causal-inference-for-data-analysis": [
+  "probability-concepts-and-applications"
+ ],
+ "cellular-biochemistry-part-i": [
+  "concepts-in-modern-genetics",
+  "general-biochemistry"
+ ],
+ "chemical-and-biological-engineering-thermodynamics": [
+  "introduction-to-chemical-engineering",
+  "thermodynamics-i"
+ ],
+ "city-living-ethnographies-of-urban-worlds": [
+  "german-iv"
+ ],
+ "classical-set-theory": [
+  "logic-i"
+ ],
+ "climate-and-sustainability-lab": [
+  "introduction-to-atmosphere-ocean-and-climate-dynamics"
+ ],
+ "computational-materials-design": [
+  "mechanics-of-materials",
+  "microstructural-evolution-in-materials"
+ ],
+ "computer-language-engineering": [
+  "computation-structures",
+  "software-construction"
+ ],
+ "computing-fabrics": [
+  "mechanics-of-materials"
+ ],
+ "conflict-contest-controversy-a-literary-investigation-of-ger": [
+  "german-iv"
+ ],
+ "congress-and-the-american-political-system-i": [
+  "introduction-to-the-american-political-process"
+ ],
+ "contemporary-french-film-and-social-issues": [
+  "french-iv"
+ ],
+ "continuous-flow-chemistry-sustainable-conversion-of-reclaime": [
+  "organic-chemistry-ii",
+  "organic-structure-determination"
+ ],
+ "creative-computation": [
+  "design-through-computation-and-making"
+ ],
+ "cultural-geographies-of-germany-nature-culture-and-politics": [
+  "german-iv"
+ ],
+ "data-science-fundamentals": [
+  "introduction-to-computer-programming-and-numerical-methods-f",
+  "probability-concepts-and-applications"
+ ],
+ "design-and-analysis-of-algorithms": [
+  "algorithms-and-data-structures"
+ ],
+ "design-and-experimentation-for-ocean-engineering": [
+  "designing-for-the-future-earth-sea-and-space",
+  "numerical-computation-for-mechanical-engineers"
+ ],
+ "design-and-manufacturing-i": [
+  "mechanical-engineering-tools",
+  "mechanics-and-materials-i"
+ ],
+ "design-and-manufacturing-ii": [
+  "design-and-manufacturing-i"
+ ],
+ "design-and-testing-of-autonomous-vehicles": [
+  "robotics-science-and-systems"
+ ],
+ "design-principles-of-biological-systems": [
+  "cellular-biochemistry-part-i"
+ ],
+ "design-studio-advanced-product-design": [
+  "design-studio-objects-and-interaction"
+ ],
+ "design-studio-interaction-intelligence": [
+  "design-studio-objects-and-interaction"
+ ],
+ "differential-equations": [
+  "linear-algebra"
+ ],
+ "digital-systems-laboratory": [
+  "computation-structures"
+ ],
+ "electromagnetism-ii": [
+  "differential-equations",
+  "physics-iii"
+ ],
+ "electronic-optical-and-magnetic-properties-of-materials": [
+  "structure-of-materials",
+  "thermodynamics-of-materials"
+ ],
+ "emergent-computations-within-distributed-neural-circuits": [
+  "introduction-to-neural-computation"
+ ],
+ "energy-materials-and-manufacturing": [
+  "design-and-manufacturing-ii"
+ ],
+ "environmental-systems-i": [
+  "environmental-systems-ii"
+ ],
+ "extrasolar-planets-physics-and-detection-techniques": [
+  "differential-equations",
+  "physics-iii"
+ ],
+ "feedback-control-systems": [
+  "principles-of-automatic-control"
+ ],
+ "field-geology": [
+  "structural-geology"
+ ],
+ "fluid-mechanics": [
+  "differential-equations",
+  "introduction-to-chemical-engineering"
+ ],
+ "food-and-culture-in-the-german-speaking-world-language-ident": [
+  "german-iv"
+ ],
+ "food-chemistry-i": [
+  "food-chemistry-ii"
+ ],
+ "francophone-cultures-through-the-arts": [
+  "french-iv"
+ ],
+ "franz-kafka-an-author-for-the-21st-century": [
+  "german-iv"
+ ],
+ "french-and-contemporary-urban-cultures": [
+  "french-iv"
+ ],
+ "french-conversation-intensive-practice": [
+  "french-iv"
+ ],
+ "french-i": [
+  "french-ii"
+ ],
+ "french-iii": [
+  "french-ii"
+ ],
+ "french-iv": [
+  "french-iii"
+ ],
+ "french-pop-music": [
+  "french-iv"
+ ],
+ "fundamentals-of-music-processing": [
+  "signal-processing"
+ ],
+ "geochemistry-i": [
+  "geochemistry-ii"
+ ],
+ "german-cinema": [
+  "german-iv"
+ ],
+ "german-i": [
+  "german-ii"
+ ],
+ "german-iii": [
+  "german-ii"
+ ],
+ "german-iv": [
+  "german-iii"
+ ],
+ "global-engineering-green-machines": [
+  "design-and-manufacturing-ii"
+ ],
+ "graphic-stories-spanish-and-latin-american-comics": [
+  "spanish-iv"
+ ],
+ "greek-i": [
+  "greek-ii"
+ ],
+ "greek-readings": [
+  "greek-ii"
+ ],
+ "hydraulic-engineering-ii": [
+  "hydraulic-engineering-iii"
+ ],
+ "instrumentation-and-measurement-mica-projects": [
+  "measurement-and-instrumentation"
+ ],
+ "integrated-chemical-engineering-topics-i": [
+  "integrated-chemical-engineering-topics-ii"
+ ],
+ "integrated-chemical-engineering-topics-ii": [
+  "integrated-chemical-engineering-topics-iii"
+ ],
+ "integration-of-reactor-design-operations-and-safety": [
+  "neutron-physics-and-radiation-transport",
+  "nuclear-energy-conversion"
+ ],
+ "introduction-to-computational-molecular-biology": [
+  "algorithms-and-data-structures"
+ ],
+ "introduction-to-computational-science-and-engineering": [
+  "introduction-to-computer-science"
+ ],
+ "introduction-to-computational-thinking-and-data-science": [
+  "introduction-to-computer-science"
+ ],
+ "introduction-to-eecs-via-interconnected-embedded-systems": [
+  "introduction-to-computer-science"
+ ],
+ "introduction-to-eecs-via-robotics": [
+  "introduction-to-computer-science"
+ ],
+ "introduction-to-french-culture": [
+  "french-iv"
+ ],
+ "introduction-to-french-literature": [
+  "french-iv"
+ ],
+ "introduction-to-hydrology-and-water-resources": [
+  "fluid-mechanics"
+ ],
+ "introduction-to-modeling-and-simulation": [
+  "differential-equations"
+ ],
+ "introduction-to-research-on-science-technology-and-policy": [
+  "making-public-policy"
+ ],
+ "landscape-architecture-i": [
+  "landscape-architecture-ii"
+ ],
+ "large-scale-symbolic-systems": [
+  "fundamentals-of-programming"
+ ],
+ "latin-i": [
+  "latin-ii"
+ ],
+ "latin-readings": [
+  "latin-i"
+ ],
+ "leadership-in-negotiation-advanced-applications": [
+  "the-art-and-science-of-negotiation"
+ ],
+ "logic-i": [
+  "logic-ii"
+ ],
+ "master-s-seminar-atmosphere-and-climate-1": [
+  "master-s-seminar-atmosphere-and-climate-2"
+ ],
+ "materials-performance-in-extreme-environments": [
+  "materials-processing",
+  "mechanics-of-materials"
+ ],
+ "materials-physics-of-neural-interfaces": [
+  "electronic-optical-and-magnetic-properties-of-materials"
+ ],
+ "materials-processing": [
+  "microstructural-evolution-in-materials"
+ ],
+ "materials-science-and-engineering-of-clean-energy": [
+  "electronic-optical-and-magnetic-properties-of-materials",
+  "microstructural-evolution-in-materials"
+ ],
+ "mathematics-and-computational-thinking-for-materials-scienti": [
+  "mathematics-and-computational-thinking-for-materials-scienti-2"
+ ],
+ "mechanics-of-materials": [
+  "solid-mechanics"
+ ],
+ "mergers-acquisitions-and-private-equity": [
+  "laboratory-in-investments"
+ ],
+ "methods-of-policy-analysis": [
+  "making-public-policy"
+ ],
+ "microbial-physiology": [
+  "concepts-in-modern-genetics",
+  "general-biochemistry"
+ ],
+ "microeconomic-theory-and-public-policy": [
+  "microeconomics"
+ ],
+ "microstructural-evolution-in-materials": [
+  "structure-of-materials",
+  "thermodynamics-of-materials"
+ ],
+ "mobile-and-sensor-computing": [
+  "computer-systems-engineering"
+ ],
+ "modern-biostatistics": [
+  "concepts-in-modern-genetics",
+  "general-biochemistry"
+ ],
+ "modern-computational-biology": [
+  "concepts-in-modern-genetics",
+  "general-biochemistry"
+ ],
+ "modern-physical-metallurgy": [
+  "mechanics-of-materials"
+ ],
+ "molecular-biology": [
+  "concepts-in-modern-genetics"
+ ],
+ "music-since-1900": [
+  "harmony-and-counterpoint-i"
+ ],
+ "nanomechanics-of-materials-and-biomaterials": [
+  "mechanics-of-materials"
+ ],
+ "nuclear-fusion-and-plasma-physics-epfl": [
+  "radiation-detection-epfl"
+ ],
+ "optimization-methods": [
+  "linear-algebra-and-optimization"
+ ],
+ "organic-electronic-materials-and-devices": [
+  "synthesis-and-design-of-materials"
+ ],
+ "organic-structure-determination": [
+  "general-chemistry-organic-chemistry-i",
+  "macromolecular-prodrugs"
+ ],
+ "perception": [
+  "introduction-to-neuroscience"
+ ],
+ "physical-chemistry-ii-chemical-reaction-kinetics": [
+  "chemical-and-biological-engineering-thermodynamics",
+  "mass-transfer"
+ ],
+ "physical-systems-modeling-and-design-using-machine-learning": [
+  "modeling-with-machine-learning-from-algorithms-to-applicatio",
+  "numerical-computation-for-mechanical-engineers"
+ ],
+ "planetary-atmospheres": [
+  "introduction-to-atmosphere-ocean-and-climate-dynamics"
+ ],
+ "plate-tectonics-and-climate": [
+  "introduction-to-geology"
+ ],
+ "political-science-laboratory": [
+  "political-science-scope-and-methods"
+ ],
+ "polymer-engineering": [
+  "materials-processing",
+  "mechanics-of-materials"
+ ],
+ "principles-of-manufacturing": [
+  "structure-of-materials",
+  "thermodynamics-of-materials"
+ ],
+ "quantum-physics-i": [
+  "quantum-physics-ii"
+ ],
+ "race-and-migration-in-europe": [
+  "german-iv"
+ ],
+ "sedimentary-environments": [
+  "introduction-to-geology"
+ ],
+ "separation-processes": [
+  "chemical-and-biological-engineering-thermodynamics",
+  "mass-transfer"
+ ],
+ "software-design": [
+  "mathematics-for-computer-science",
+  "software-construction"
+ ],
+ "spanish-conversation-and-composition": [
+  "spanish-iv"
+ ],
+ "spanish-i": [
+  "spanish-ii"
+ ],
+ "spanish-iii": [
+  "spanish-ii"
+ ],
+ "spanish-in-context-social-movements-and-cultural-change": [
+  "spanish-iv"
+ ],
+ "spanish-iv": [
+  "spanish-iii"
+ ],
+ "spanish-through-film-mexico-chile-argentina-and-spain": [
+  "spanish-iv"
+ ],
+ "statistical-physics-i": [
+  "differential-equations",
+  "physics-iii",
+  "statistical-physics-ii"
+ ],
+ "statistical-physics-ii": [
+  "quantum-physics-ii"
+ ],
+ "stem-cells-biology-and-therapeutic-manipulation": [
+  "concepts-in-modern-genetics",
+  "general-biochemistry"
+ ],
+ "strategy-and-information": [
+  "microeconomics"
+ ],
+ "synthesis-of-boron-heterocycles": [
+  "inorganic-chemistry-i",
+  "organic-structure-determination"
+ ],
+ "systems-neuroscience-laboratory": [
+  "introduction-to-neuroscience"
+ ],
+ "the-ai-edge": [
+  "applied-probability-and-statistics",
+  "optimization-methods-in-business-analytics"
+ ],
+ "the-crispr-revolution-engineering-the-genome-for-basic-scien": [
+  "cellular-biochemistry-part-i"
+ ],
+ "the-economics-of-work-wages-and-discrimination": [
+  "methods-ii-quantitative-methods"
+ ],
+ "the-making-of-modern-europe-1789-present": [
+  "french-iv"
+ ],
+ "theory-of-models": [
+  "logic-i"
+ ],
+ "therapeutic-skills-i": [
+  "therapeutic-skills-ii"
+ ],
+ "thesis-research-design-seminar-2": [
+  "political-science-laboratory"
+ ],
+ "topics-in-medicine-and-public-health-in-the-hispanic-world": [
+  "spanish-iv"
+ ],
+ "understanding-contemporary-french-politics": [
+  "french-iv"
+ ],
+ "urban-energy-systems-and-policy": [
+  "microeconomics"
+ ],
+ "writing-like-the-french": [
+  "french-iv"
+ ]
+}

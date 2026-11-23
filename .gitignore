@@ -1,0 +1,28 @@
+# Everything scraped or derived from university catalogs stays local.
+# Rebuild it with the bootstrap steps in AGENTS.md (catalogs.json lists example sources).
+data/universities/
+data/degrees/
+data/subjects/
+
+# Generated study material (regenerate with the agent loop in AGENTS.md)
+data/subjects/*/L[0-3].md
+data/subjects/*/sources.json
+data/subjects/*/figures/
+
+# Personal progress and pipeline scratch space
+progress.json
+work/
+
+# Flutter / Dart
+app/build/
+app/.dart_tool/
+app/.flutter-plugins*
+app/.packages
+*.log
+
+# Python
+__pycache__/
+*.pyc
+
+# Local tool settings
+.claude/settings.local.json

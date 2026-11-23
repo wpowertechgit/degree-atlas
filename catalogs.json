@@ -1,0 +1,29 @@
+{
+  "_note": "Examples of public course catalogs. Check each site's terms of use before scraping or redistributing. Scraped data stays local (data/universities/ is gitignored). Add your own universities here.",
+  "universities": [
+    {
+      "id": "mit",
+      "name": "MIT",
+      "catalog": "https://catalog.mit.edu/",
+      "degree_lists": "https://catalog.mit.edu/degree-charts/",
+      "course_pages": "https://catalog.mit.edu/search/?P=<course code>",
+      "notes": "Bachelor degree charts list required subjects per Course (major). Prerequisites are given as course codes in each subject entry."
+    },
+    {
+      "id": "eth",
+      "name": "ETH Zurich",
+      "catalog": "https://www.vvz.ethz.ch/",
+      "degree_lists": "https://ethz.ch/en/studies/bachelor.html and https://ethz.ch/en/studies/master.html",
+      "course_pages": "https://www.vvz.ethz.ch/Vorlesungsverzeichnis/lerneinheit.view?lerneinheitId=<id>&lang=en",
+      "notes": "Prerequisites are free text; mapper/prereqs.py resolves them to courses. Use English pages (lang=en)."
+    },
+    {
+      "id": "nus",
+      "name": "National University of Singapore",
+      "catalog": "https://nusmods.com/",
+      "api": "https://api.nusmods.com/v2/",
+      "course_pages": "https://nusmods.com/modules/<code>",
+      "notes": "NUSMods exposes module data as JSON, so no HTML scraping is needed."
+    }
+  ]
+}

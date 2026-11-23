@@ -1,0 +1,25 @@
+{
+ "id": "computing",
+ "title": "Computing",
+ "degrees": [
+  "eth-bsc-computational-science-and-engineering",
+  "eth-bsc-computer-science",
+  "eth-msc-computational-biology-and-bioinformatics",
+  "eth-msc-computational-science-and-engineering",
+  "eth-msc-computer-science",
+  "eth-msc-cyber-security",
+  "eth-msc-data-science",
+  "eth-msc-neural-systems-and-computation",
+  "eth-msc-robotics-systems-and-control",
+  "mit-bsc-artificial-intelligence-and-decision-making-course-6-4",
+  "mit-bsc-computation-and-cognition-course-6-9",
+  "mit-bsc-computer-science-and-engineering-course-6-3",
+  "mit-bsc-computer-science-and-molecular-biology-course-6-7",
+  "mit-bsc-computer-science-economics-and-data-science-course-6-14",
+  "mit-bsc-electrical-engineering-with-computing-course-6-5",
+  "mit-bsc-mathematics-with-computer-science-course-18-c",
+  "mit-bsc-urban-science-and-planning-with-computer-science-course-11-6",
+  "national-bsc-bachelor-of-computing-computer-science",
+  "national-msc-master-of-computing-computer-science-specialisation"
+ ]
+}

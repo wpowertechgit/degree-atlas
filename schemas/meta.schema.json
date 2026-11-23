@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["id", "title", "aliases", "summary", "prerequisites", "degrees", "levels"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"},
+    "title": {"type": "string", "minLength": 1},
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "university"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {"type": "string"},
+          "university": {"type": "string"},
+          "code": {"type": "string"}
+        }
+      }
+    },
+    "summary": {"type": "string", "minLength": 1},
+    "prerequisites": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "degrees": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["degree", "kind"],
+        "additionalProperties": false,
+        "properties": {
+          "degree": {"type": "string"},
+          "kind": {"enum": ["mandatory", "elective"]}
+        }
+      }
+    },
+    "levels": {
+      "type": "object",
+      "required": ["L0", "L1", "L2", "L3"],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^L[0-3]$": {
+          "type": "object",
+          "required": ["state"],
+          "additionalProperties": false,
+          "properties": {
+            "state": {"enum": ["none", "done", "verified"]},
+            "date": {"type": "string"},
+            "model": {"type": "string"}
+          }
+        }
+      }
+    }
+  }
+}

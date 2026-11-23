@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["level", "title", "url"],
+    "additionalProperties": false,
+    "properties": {
+      "level": {"enum": ["L0", "L1", "L2", "L3"]},
+      "title": {"type": "string"},
+      "url": {"type": "string"},
+      "preprint": {"type": "boolean"}
+    }
+  }
+}
