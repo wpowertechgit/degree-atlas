@@ -1050,8 +1050,8 @@ class _RadialViewState extends ConsumerState<_RadialView> with TickerProviderSta
                 padding: const EdgeInsets.only(left: 4),
                 child: Text(
                   shownSemester != null ? 'Required courses for S$shownSemester'
-                      : degree.requiredCourses.isEmpty ? 'No verified requirements yet'
-                      : 'Verified required courses · no fixed semester',
+                      : degree.requiredCourses.isEmpty ? 'No required courses yet'
+                      : 'Required courses · no fixed semester',
                   style: const TextStyle(fontSize: 11, color: Colors.black54),
                 ),
               ),

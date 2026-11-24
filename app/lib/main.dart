@@ -98,8 +98,8 @@ class Degree {
   final String? curriculumSource;
   final List<Map<String, dynamic>> choices;
 
-  String kindOf(Map<String, dynamic> entry) =>
-      entry['source'] is String ? entry['kind'] as String? ?? 'unverified' : 'unverified';
+  /// Electives form choice groups; every other course link (with or without a plan source) counts as a course.
+  String kindOf(Map<String, dynamic> entry) => entry['kind'] == 'elective' ? 'elective' : 'mandatory';
   Iterable<Map<String, dynamic>> get requiredCourses =>
       subjects.where((entry) => kindOf(entry) == 'mandatory');
   List<int> get semesters =>
@@ -383,7 +383,7 @@ class HomePage extends StatelessWidget {
           for (final d in a.degrees) {
             tiles.add(ExpansionTile(
               title: Text(d.title),
-              subtitle: Text('${d.level} · ${d.requiredCourses.length} verified required'),
+              subtitle: Text('${d.level} · ${d.requiredCourses.length} required'),
               shape: const Border(),
               children: [
                 DegreeCourseSections(degree: d, atlas: a,
@@ -472,19 +472,18 @@ class DegreeCourseSections extends StatelessWidget {
       for (final choice in degree.choices)
         choice['name'] as String: choice['rule'] as String,
     };
-    final imported = degree.subjects.where((e) => degree.kindOf(e) == 'unverified').toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (required.isEmpty)
           const Padding(
             padding: EdgeInsets.all(12),
-            child: Text('No required courses have been confirmed against a study plan yet.'),
+            child: Text('No required courses yet.'),
           )
         else
           ExpansionTile(
             title: Text('Required courses (${required.length})'),
-            initiallyExpanded: groups.isEmpty && rules.isEmpty && imported.isEmpty,
+            initiallyExpanded: groups.isEmpty && rules.isEmpty,
             children: [
               for (final semester in degree.semesters) ...[
                 ListTile(dense: true, title: Text('S$semester', style: HouseStyle.label)),
@@ -511,12 +510,6 @@ class DegreeCourseSections extends StatelessWidget {
                 else
                   ListTile(title: Text(name), subtitle: Text(rules[name]!)),
             ],
-          ),
-        if (imported.isNotEmpty)
-          ExpansionTile(
-            title: Text('Imported for review (${imported.length})'),
-            subtitle: const Text('Course links from an older import. Requirement status needs evidence.'),
-            children: _tiles(imported.map((entry) => {...entry, 'semester': null})),
           ),
       ],
     );

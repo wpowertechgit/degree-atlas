@@ -212,6 +212,38 @@ def degree_record(did, degree, entries, plan):
     return record
 
 
+def suggest_semesters(entries, prereq, level):
+    """Give every non-elective course without a plan semester a suggested one. Returns True if any was set.
+
+    Courses go in prerequisite order (foundations first; among equals, courses that more others build on
+    come earlier), spread evenly over the usual number of terms, and always after their own prerequisites.
+    Semesters taken from an official plan are kept.
+    """
+    terms = 4 if level == "MSc" else 6
+    core = [e for e in entries if e["kind"] != "elective"]
+    ids = {e["subject"] for e in core}
+    todo = [e for e in core if e.get("semester") is None]
+    if not todo:
+        return False
+    memo = {}
+
+    def depth(sid, seen=frozenset()):
+        if sid not in memo:
+            ps = [p for p in prereq.get(sid, ()) if p in ids and p not in seen]  # `seen` guards against cycles
+            memo[sid] = 1 + max((depth(p, seen | {sid}) for p in ps), default=0)
+        return memo[sid]
+
+    dependents = Counter(p for sid in ids for p in prereq.get(sid, ()) if p in ids)
+    todo.sort(key=lambda e: (depth(e["subject"]), -dependents[e["subject"]], e["subject"]))
+    placed = {e["subject"]: e["semester"] for e in core if e.get("semester") is not None}
+    per = math.ceil(len(todo) / terms)
+    for i, e in enumerate(todo):
+        after = max((placed.get(p) or 0 for p in prereq.get(e["subject"], ()) if p in ids), default=0)
+        e["semester"] = min(terms, max(i // per + 1, after + 1))
+        placed[e["subject"]] = e["semester"]
+    return True
+
+
 def curriculum():
     """Migrate degree metadata without rewriting course notes, aliases or prerequisites."""
     plans = curriculum_plans()
@@ -279,11 +311,17 @@ def curriculum():
         record = load(path)
         changed = False
         for entry in record["subjects"]:
-            if not entry.get("source") and (entry["kind"] != "unverified" or entry.get("semester") is not None):
-                entry.update(kind="unverified", semester=None)
+            if not entry.get("source") and entry["kind"] != "unverified":
+                entry["kind"] = "unverified"
                 changed = True
         if changed:
             records[record["id"]] = record
+    prereqs = {sid: meta["prerequisites"] for sid, meta in metas.items()}
+    for path in (root / "data/degrees").glob("*.json"):
+        if path.stem not in records and suggest_semesters((record := load(path))["subjects"], prereqs, record["level"]):
+            records[record["id"]] = record
+    for record in records.values():
+        suggest_semesters(record["subjects"], prereqs, record["level"])
     membership = defaultdict(list)
     for did, record in records.items():
         for entry in record["subjects"]:
@@ -470,10 +508,11 @@ def assemble():
         if remaining != previous["degrees"]:
             previous["degrees"] = remaining
             save(root / "data/subjects" / sid / "meta.json", previous)
-    # Catalog semesters are nullable. Dependency depth is not a catalog term.
+    # Plan semesters come from the study plan; the remaining courses get a suggested semester.
     dom = defaultdict(list)
     known_domains = {f.stem for f in (root / "data/domains").glob("*.json")}  # before this run writes anything
     for did, record in deg_files.items():
+        suggest_semesters(record["subjects"], prereq, record["level"])
         save(root / "data/degrees" / f"{did}.json", record)
         dom[chosen_domain.get(did) or domain_of(record["title"])].append(did)  # the keyword guess is only the fallback for old data
     for dn, dl in dom.items():

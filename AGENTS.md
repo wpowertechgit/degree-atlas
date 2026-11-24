@@ -20,7 +20,7 @@ scout -> mapper -> writer, with an optional verifier pass. Agent definitions liv
 ```
 data/universities/<uni>.json   raw course lists (scout)
 data/domains/<domain>.json     groups of degrees
-data/degrees/<degree>.json     sourced requirements, choice groups and nullable semesters
+data/degrees/<degree>.json     sourced requirements, choice groups and semesters (plan or suggested)
 data/subjects/<id>/            meta.json, L0.md..L3.md, exercises.json, figures/, sources.json
 materials/<course>/            the user's own course files plus index.json (profile root, private)
 ```
@@ -87,7 +87,7 @@ You classify, not the mapper. For every degree in a university file set `domain`
 
 - Verify membership for the exact institution, credential, major or track, and cohort. Build from the published requirements first. Use catalog descriptions afterward to identify and describe the courses. Retrieve both teaching terms if the catalog is split by term.
 - A mandatory subject is a named course that every student on the stated plan takes. A required number of credits, a pick-one option, a specialization, free electives, and university-wide categories belong in named choice groups. An eligible course is an option even if the catalog marks it compulsory within one optional track.
-- Put the official requirement URL in `course.requirement.source` and use `course.requirement.kind` and `group` where applicable. Set `semester` only when the official study plan places the named course in that semester. Fall or spring availability, course numbers and prerequisite depth do not determine a semester. Leave it null when the plan is flexible.
+- Put the official requirement URL in `course.requirement.source` and use `course.requirement.kind` and `group` where applicable. Set `semester` only when the official study plan places the named course in that semester. Fall or spring availability and course numbers do not determine a semester. Leave it null when the plan is flexible: `mapper.py assemble` (and `curriculum`) then gives every non-elective course without a plan semester a suggested one, in prerequisite order spread over 6 terms (BSc) or 4 (MSc). Never hand-edit semesters in degree files.
 - Preserve named choice rules such as “pick one” or “pick two tracks” and any unit limits. Do not turn an entire department catalog or a broad eligibility rule into a degree list. Keep unmatched legacy entries unverified until a source resolves them.
 - Cluster equivalent course content only when scope, depth and outcomes match. Titles, similar topics and cross-listings alone do not justify a merge. Keep generic theses, seminars, introductory sequences and advanced variants separate unless there is evidence of equivalent content. Clusters never carry membership, requirement status or semester from one degree to another.
 - Review the output by listing the first term, counting the named mandatory subjects, and checking the biggest choice group against the source. If a term or named core is missing, flag the gap and leave it unverified until there is evidence.

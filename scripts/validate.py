@@ -151,7 +151,7 @@ for f in root.glob("data/degrees/*.json"):
         ids.add(sid)
         if kind in ("mandatory", "elective") and not s.get("source"):
             errors.append(f"{f.name}: '{sid}' needs requirement evidence")
-        if kind != "mandatory" and s.get("semester") is not None:
+        if kind == "elective" and s.get("semester") is not None:
             errors.append(f"{f.name}: '{sid}' is outside the required semester sequence")
         if sid in metas and {"degree": degree["id"], "kind": kind} not in metas[sid]["degrees"]:
             errors.append(f"{f.name}: '{sid}' membership disagrees with subject metadata")
