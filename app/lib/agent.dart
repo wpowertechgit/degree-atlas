@@ -6,8 +6,10 @@ import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:path/path.dart' as p;
+import 'package:watcher/watcher.dart';
 
 import 'claude_connection.dart';
+import 'house_style.dart';
 import 'main.dart' show Md, Subject, accent, activeProfile, dataDir, repoRoot;
 
 enum Role { user, assistant, tool, error }
@@ -60,29 +62,40 @@ Future<void> killRunningAgent() async {
 }
 
 /// One long-lived `claude` process speaking stream-json, with all permissions bypassed.
-/// The session id is kept in work/agent_session.txt so the conversation survives app restarts.
+///
+/// Every message re-sends the whole conversation, so old conversations are not carried along: the agent works
+/// from the files (AGENTS.md, next.py), not from chat history. A stopped agent resumes its session only when it
+/// was active within [_resumeWindow] (for example to receive the answer to its own question); after that, after
+/// an app restart or after "New chat" the next message starts a fresh session.
 class AgentNotifier extends Notifier<AgentState> {
   /// Older messages are dropped from the panel; long runs produce one tool line per call.
   static const _maxMsgs = 400;
 
+  /// An agent that has answered everything is stopped after this long.
+  static const _idleLimit = Duration(minutes: 5);
+
+  /// A stopped session is resumed only within this time after its last answer.
+  static const _resumeWindow = Duration(minutes: 30);
+
   Process? _proc;
+  Timer? _idle;
   List<StreamSubscription<String>> _subs = [];
-  String? _session;
+  String? _session; // in memory only, so an app restart always starts fresh
+  DateTime? _lastActive;
   Msg? _live; // assistant message currently streaming
   int _pending = 0; // user messages not yet answered by a result event
 
   String get _root => dataDir().absolute.parent.path;
-  File get _sessionFile => File(p.join(_root, 'work', 'agent_session.txt'));
 
   @override
   AgentState build() {
     ref.onDispose(_kill);
-    if (_sessionFile.existsSync()) _session = _sessionFile.readAsStringSync().trim();
     return const AgentState();
   }
 
   /// Stops the current process tree and its output streams, so a stopped agent cannot write into the chat.
   void _kill() {
+    _idle?.cancel();
     final proc = _proc;
     _proc = null;
     _live = null;
@@ -106,18 +119,15 @@ class AgentNotifier extends Notifier<AgentState> {
   void _touch({bool? busy}) => state = state.copyWith(msgs: List.of(state.msgs), busy: busy);
 
   void _saveSession(String? id) {
-    if (id == null || id == _session) return;
-    _session = id;
-    _sessionFile.parent.createSync(recursive: true);
-    _sessionFile.writeAsStringSync(id);
-  }
-
-  void _forgetSession() {
-    _session = null;
-    if (_sessionFile.existsSync()) _sessionFile.deleteSync();
+    if (id != null) _session = id;
   }
 
   Future<void> _start() async {
+    final recent = _lastActive != null && DateTime.now().difference(_lastActive!) < _resumeWindow;
+    if (_session != null && !recent) {
+      _session = null;
+      if (state.msgs.isNotEmpty) _push(Role.tool, 'New session: earlier messages are not sent to the agent');
+    }
     final (exe, shell) = claudeExe();
     final proc = await Process.start(
       exe,
@@ -128,6 +138,11 @@ class AgentNotifier extends Notifier<AgentState> {
         '--include-partial-messages',
         '--verbose',
         '--permission-mode', 'bypassPermissions',
+        // Only the project's own setup (CLAUDE.md -> AGENTS.md, .claude/agents): no personal MCP servers, skills,
+        // plugins or hooks. Measured: about 29k instead of 49k context tokens on every call.
+        '--strict-mcp-config',
+        '--disable-slash-commands',
+        '--setting-sources', 'project,local',
         '--model', state.model,
         '--effort', state.effort,
         '--append-system-prompt', _systemPrompt(_root, activeProfile != null),
@@ -155,7 +170,7 @@ class AgentNotifier extends Notifier<AgentState> {
       if (_pending > 0 || code != 0) {
         final tail = err.trim();
         _push(Role.error, 'Agent exited ($code). ${tail.length > 300 ? tail.substring(tail.length - 300) : tail}');
-        _forgetSession(); // a stale session id is the usual cause; the next message starts fresh
+        _session = null; // a stale session id is the usual cause; the next message starts fresh
       }
       _pending = 0;
       _touch(busy: false);
@@ -188,10 +203,15 @@ class AgentNotifier extends Notifier<AgentState> {
         }
       case 'result':
         _saveSession(e['session_id']);
+        _lastActive = DateTime.now();
         _live = null;
         if (e['is_error'] == true) _push(Role.error, '${e['result'] ?? 'Agent error'}');
         _pending = (_pending - 1).clamp(0, 1 << 30);
         _touch(busy: _pending > 0);
+        if (_pending == 0) {
+          _idle?.cancel();
+          _idle = Timer(_idleLimit, _kill); // nothing left to answer: do not keep the process (and its tools) alive
+        }
     }
   }
 
@@ -212,6 +232,7 @@ class AgentNotifier extends Notifier<AgentState> {
   Future<void> send(String text) async {
     text = text.trim();
     if (text.isEmpty) return;
+    _idle?.cancel();
     try {
       if (_proc == null) await _start();
     } on ProcessException catch (e) {
@@ -227,8 +248,9 @@ class AgentNotifier extends Notifier<AgentState> {
     }));
   }
 
-  /// Interrupts the current work; the conversation continues from the saved session on the next message.
+  /// Interrupts the current work; a message soon after continues the same session.
   void stop() {
+    _lastActive = DateTime.now();
     _kill();
     _pending = 0;
     if (state.busy) _push(Role.tool, 'Stopped');
@@ -241,7 +263,7 @@ class AgentNotifier extends Notifier<AgentState> {
     state = state.copyWith(model: m);
   }
 
-  /// Takes effect on the next message; the conversation resumes from the saved session.
+  /// Takes effect on the next message, which continues the session if it was active recently.
   void setEffort(String e) {
     if (state.busy) return;
     _kill();
@@ -250,7 +272,7 @@ class AgentNotifier extends Notifier<AgentState> {
 
   void newChat() {
     stop();
-    _forgetSession();
+    _session = null;
     state = AgentState(model: state.model, effort: state.effort);
   }
 
@@ -258,8 +280,9 @@ class AgentNotifier extends Notifier<AgentState> {
 
   /// Writes the English level if missing; for another language also produces the translation.
   void requestLevel(Subject s, int n, {String lang = 'en'}) => send(
-      'Write L$n for subject `${s.id}` (${s.title}). Follow AGENTS.md: check with `python scripts/next.py L$n`, '
-      'write any missing prerequisite levels first, then run validate.py.'
+      'Write L$n for subject `${s.id}` (${s.title}) following AGENTS.md, then run validate.py. Write only this one level '
+      'of this one subject: do not write prerequisite subjects or any other level. If a prerequisite lacks L$n, use what its '
+      'existing levels introduce and name it in your final line.'
       '${lang == 'en' ? '' : ' Afterwards also write the ${languages[lang]} version as ${_file(s, n, lang)} (AGENTS.md, Languages).'}');
 
   void requestTranslation(Subject s, int n, String lang) => send(
@@ -285,8 +308,8 @@ class AgentNotifier extends Notifier<AgentState> {
       'same ids, levels, types and answer keys for multiple choice and numeric items, translated prompts, choices, hints and solutions. Run validate.py.';
 
   void continueLevel(int n) => send(
-      'Run `python scripts/next.py L$n -n 5` and write every READY subject it lists, following AGENTS.md. '
-      'Validate after the batch, then report what you wrote.');
+      'Run `python scripts/next.py L$n -n 1` and write L$n for that one subject if it is READY, following AGENTS.md. '
+      'Write exactly one subject, then run validate.py and report which subject you wrote.');
 
   void fix(Subject s, int n, String lang, String problem) => send(
       'Fix ${_file(s, n, lang)} of `${s.id}` (${s.title}). Problem reported by the user: "$problem". '
@@ -316,6 +339,16 @@ class LangNotifier extends Notifier<String> {
 
   @override
   String build() {
+    // The agent sets the language when it builds a new program; pick it up without a restart.
+    final sub = FileWatcher(_f.path).events.listen((_) {
+      final l = _read();
+      if (l != state) state = l;
+    }, onError: (_) {});
+    ref.onDispose(sub.cancel);
+    return _read();
+  }
+
+  String _read() {
     try {
       final l = jsonDecode(_f.readAsStringSync())['language'];
       if (languages.containsKey(l)) return l;
@@ -405,16 +438,28 @@ class _AgentPanelState extends ConsumerState<AgentPanel> {
           child: Row(children: [
             const Text('Agent', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
             const Spacer(),
-            DropdownButton<String>(
-              value: s.model,
-              underline: const SizedBox(),
-              style: const TextStyle(fontSize: 12, color: Colors.black87),
-              items: const [
-                DropdownMenuItem(value: 'haiku', child: Text('haiku')),
-                DropdownMenuItem(value: 'sonnet', child: Text('sonnet')),
-                DropdownMenuItem(value: 'opus', child: Text('opus')),
+            // One picker for model and effort, since both decide how the agent runs.
+            PopupMenuButton<(String, String)>(
+              enabled: !s.busy,
+              tooltip: 'Model and effort (lower effort is faster)',
+              onSelected: (v) => v.$1 == 'model' ? agent.setModel(v.$2) : agent.setEffort(v.$2),
+              itemBuilder: (_) => [
+                const PopupMenuItem(enabled: false, height: 28, child: Text('Model', style: HouseStyle.label)),
+                for (final m in const ['haiku', 'sonnet', 'opus'])
+                  CheckedPopupMenuItem(value: ('model', m), checked: s.model == m, child: Text(m)),
+                const PopupMenuDivider(),
+                const PopupMenuItem(enabled: false, height: 28, child: Text('Effort', style: HouseStyle.label)),
+                for (final e in const ['low', 'medium', 'high', 'xhigh', 'max'])
+                  CheckedPopupMenuItem(value: ('effort', e), checked: s.effort == e, child: Text(e)),
               ],
-              onChanged: s.busy ? null : (v) => agent.setModel(v!),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  Text('${s.model} · ${s.effort}',
+                      style: TextStyle(fontSize: 12, color: s.busy ? Colors.black38 : Colors.black87)),
+                  const Icon(Icons.arrow_drop_down, size: 18),
+                ]),
+              ),
             ),
             IconButton(
                 tooltip: 'Copy chat',
@@ -434,25 +479,12 @@ class _AgentPanelState extends ConsumerState<AgentPanel> {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Wrap(spacing: 6, crossAxisAlignment: WrapCrossAlignment.center, children: [
+          child: Wrap(spacing: 6, children: [
             for (final n in [0, 1, 2, 3])
               ActionChip(
                   label: Text('Next L$n', style: const TextStyle(fontSize: 11.5, color: Colors.black87)),
                   visualDensity: VisualDensity.compact,
                   onPressed: () => agent.continueLevel(n)),
-            Tooltip(
-              message: 'Effort: lower is faster, higher thinks longer',
-              child: DropdownButton<String>(
-                value: s.effort,
-                underline: const SizedBox(),
-                style: const TextStyle(fontSize: 12, color: Colors.black87),
-                items: [
-                  for (final e in const ['low', 'medium', 'high', 'xhigh', 'max'])
-                    DropdownMenuItem(value: e, child: Text('effort: $e')),
-                ],
-                onChanged: s.busy ? null : (v) => agent.setEffort(v!),
-              ),
-            ),
           ]),
         ),
         const Divider(height: 12),
