@@ -22,16 +22,34 @@ jobs:
         run: |
           flutter pub get
           flutter build windows --release
-      - name: Package
+      - name: Add Visual C++ runtime
+        # App-local copies, so the app starts on PCs without the VC++ redistributable.
+        shell: pwsh
+        run: |
+          foreach ($dll in 'msvcp140.dll', 'vcruntime140.dll', 'vcruntime140_1.dll') {
+            Copy-Item "$env:WINDIR\System32\$dll" app/build/windows/x64/runner/Release/
+          }
+      - name: Package zip
         shell: pwsh
         run: tar -a -c -f degree-atlas-windows.zip -C app/build/windows/x64/runner/Release .
+      - name: Build installer
+        shell: pwsh
+        run: |
+          $version = if ('${{ github.ref_type }}' -eq 'tag') { '${{ github.ref_name }}'.TrimStart('v') } else { '0.0.0' }
+          choco install innosetup -y --no-progress
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DMyAppVersion=$version" installer/degree-atlas.iss
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          Move-Item installer/output/DegreeAtlas-Setup-*.exe .
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: degree-atlas-windows
-          path: degree-atlas-windows.zip
-      - name: Publish release asset
+          path: |
+            degree-atlas-windows.zip
+            DegreeAtlas-Setup-*.exe
+      - name: Publish release assets
         if: startsWith(github.ref, 'refs/tags/')
+        shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "${{ github.ref_name }}" degree-atlas-windows.zip --generate-notes --title "${{ github.ref_name }}"
+        run: gh release create "${{ github.ref_name }}" degree-atlas-windows.zip (Get-Item DegreeAtlas-Setup-*.exe).Name --generate-notes --title "${{ github.ref_name }}"

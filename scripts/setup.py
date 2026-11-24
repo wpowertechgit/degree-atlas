@@ -74,10 +74,12 @@ def download_release():
         out.mkdir(parents=True, exist_ok=True)
         zpath = out / "_download.zip"
         print("downloading", url)
-        urllib.request.urlretrieve(url, zpath)
-        with zipfile.ZipFile(zpath) as z:
-            z.extractall(out)
-        zpath.unlink()
+        try:
+            urllib.request.urlretrieve(url, zpath)
+            with zipfile.ZipFile(zpath) as z:
+                z.extractall(out)
+        finally:
+            zpath.unlink(missing_ok=True)
         return (out / "degree_atlas.exe").exists()
     except PermissionError:
         print("a file is in use: close Degree Atlas and rerun setup")

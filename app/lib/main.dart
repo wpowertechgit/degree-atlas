@@ -24,11 +24,14 @@ import 'radial.dart';
 const accent = HouseStyle.binder;
 const paper = HouseStyle.paper;
 
-/// Folder of the repository's own data set: DEGREE_ATLAS_DATA, else ./data or ../data relative to the working dir.
+/// Folder of the repository's own data set: DEGREE_ATLAS_DATA, else ./data or ../data relative to the working dir,
+/// else the data folder of an installed copy.
 Directory baseDataDir() {
   final env = Platform.environment['DEGREE_ATLAS_DATA'];
   if (env != null) return Directory(env);
-  for (final c in ['data', '../data']) {
+  // The installer puts the exe in <install>\bin and the data in <install>\data.
+  final installed = p.join(p.dirname(Platform.resolvedExecutable), '..', 'data');
+  for (final c in ['data', '../data', installed]) {
     if (Directory(c).existsSync()) return Directory(c);
   }
   return Directory('data');

@@ -35,3 +35,6 @@ profiles/
 
 # Imported personal course materials
 materials/
+
+# Installer build output
+/installer/output/

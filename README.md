@@ -55,6 +55,10 @@ No API keys, no accounts, no hosted service. It drives a coding agent you alread
 
 ## Quick start
 
+**Windows:** download `DegreeAtlas-Setup-<version>.exe` from the latest [release](https://github.com/wpowertechgit/degree-atlas/releases) and run it. It installs per user (no admin rights) into `%LOCALAPPDATA%\Programs\DegreeAtlas`, together with the scripts and agent instructions, and adds a Start menu entry. You also need Python 3.10+ and Claude Code for the writing agent. The installer is unsigned, so SmartScreen shows "unknown publisher" (More info, Run anyway). Uninstalling keeps your profiles.
+
+**From source** (any platform, or to work on the repository):
+
 ```bash
 git clone https://github.com/wpowertechgit/degree-atlas.git
 cd degree-atlas
@@ -63,7 +67,7 @@ python scripts/setup.py          # Python deps, prebuilt Windows app, local fold
 
 Or just open the repo in Claude Code and say "set this up" (see **Setup after clone** in [AGENTS.md](AGENTS.md)). Then start the viewer with `launch.bat` on Windows.
 
-You need Python 3.10+ and Claude Code or Codex for the writing. On Windows, `setup.py` downloads the prebuilt app from the latest [release](https://github.com/wpowertechgit/degree-atlas/releases), so no Flutter or Visual Studio is needed. The app is unsigned: if you download the zip manually in a browser, Windows SmartScreen shows "unknown publisher" (More info, Run anyway).
+You need Python 3.10+ and Claude Code or Codex for the writing. On Windows, `setup.py` downloads the prebuilt app from the latest [release](https://github.com/wpowertechgit/degree-atlas/releases), so no Flutter or Visual Studio is needed. The app is unsigned, so a zip downloaded manually in a browser triggers the same SmartScreen prompt.
 
 To build from source instead (macOS, Linux, or app development), run `python scripts/setup.py --build-app`. That needs the Flutter SDK (add `--install-flutter` to fetch it) and, on Windows, Visual Studio with the C++ desktop workload.
 
