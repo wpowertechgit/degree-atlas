@@ -36,10 +36,35 @@ String _systemPrompt(String profileRoot, bool profile) =>
     'Paths such as data/, work/ and progress.json in AGENTS.md and in user messages are relative to the active profile folder '
     '$profileRoot${profile ? ' (the scripts read it from the DEGREE_ATLAS_PROFILE environment variable)' : ''}.';
 
+/// The agent process currently running, so the app can end it when the window closes.
+Process? _running;
+
+/// Ends [proc] and everything it started (tool commands, scripts, subagents).
+/// On Windows `Process.kill` ends only the top process, which would orphan its children
+/// (and with `runInShell` it would end only the shell, leaving `claude` itself running).
+Future<void> _killTree(Process proc) async {
+  if (Platform.isWindows) {
+    await Process.run('taskkill', ['/T', '/F', '/PID', '${proc.pid}']);
+  } else {
+    proc.kill();
+  }
+}
+
+/// Ends the running agent, if any. Called before the app window closes.
+Future<void> killRunningAgent() async {
+  final proc = _running;
+  _running = null;
+  if (proc != null) await _killTree(proc);
+}
+
 /// One long-lived `claude` process speaking stream-json, with all permissions bypassed.
 /// The session id is kept in work/agent_session.txt so the conversation survives app restarts.
 class AgentNotifier extends Notifier<AgentState> {
+  /// Older messages are dropped from the panel; long runs produce one tool line per call.
+  static const _maxMsgs = 400;
+
   Process? _proc;
+  List<StreamSubscription<String>> _subs = [];
   String? _session;
   Msg? _live; // assistant message currently streaming
   int _pending = 0; // user messages not yet answered by a result event
@@ -49,14 +74,30 @@ class AgentNotifier extends Notifier<AgentState> {
 
   @override
   AgentState build() {
-    ref.onDispose(() => _proc?.kill());
+    ref.onDispose(_kill);
     if (_sessionFile.existsSync()) _session = _sessionFile.readAsStringSync().trim();
     return const AgentState();
   }
 
+  /// Stops the current process tree and its output streams, so a stopped agent cannot write into the chat.
+  void _kill() {
+    final proc = _proc;
+    _proc = null;
+    _live = null;
+    for (final s in _subs) {
+      s.cancel();
+    }
+    _subs = [];
+    if (proc == null) return;
+    if (identical(_running, proc)) _running = null;
+    unawaited(_killTree(proc));
+  }
+
   Msg _push(Role r, String text) {
     final m = Msg(r, text);
-    state = state.copyWith(msgs: [...state.msgs, m]);
+    var msgs = [...state.msgs, m];
+    if (msgs.length > _maxMsgs) msgs = msgs.sublist(msgs.length - _maxMsgs);
+    state = state.copyWith(msgs: msgs);
     return m;
   }
 
@@ -94,15 +135,22 @@ class AgentNotifier extends Notifier<AgentState> {
       runInShell: shell,
     );
     _proc = proc;
-    final err = StringBuffer();
-    proc.stderr.transform(utf8.decoder).listen(err.write);
-    proc.stdout.transform(utf8.decoder).transform(const LineSplitter()).listen(_onLine);
+    _running = proc;
+    var err = ''; // only the tail is kept for the error message
+    _subs = [
+      proc.stderr.transform(utf8.decoder).listen((s) {
+        err += s;
+        if (err.length > 4000) err = err.substring(err.length - 2000);
+      }),
+      proc.stdout.transform(utf8.decoder).transform(const LineSplitter()).listen(_onLine),
+    ];
     unawaited(proc.exitCode.then((code) {
+      if (identical(_running, proc)) _running = null;
       if (_proc != proc) return; // killed on purpose
       _proc = null;
       _live = null;
       if (_pending > 0 || code != 0) {
-        final tail = err.toString().trim();
+        final tail = err.trim();
         _push(Role.error, 'Agent exited ($code). ${tail.length > 300 ? tail.substring(tail.length - 300) : tail}');
         _forgetSession(); // a stale session id is the usual cause; the next message starts fresh
       }
@@ -178,19 +226,15 @@ class AgentNotifier extends Notifier<AgentState> {
 
   /// Interrupts the current work; the conversation continues from the saved session on the next message.
   void stop() {
-    final proc = _proc;
-    _proc = null;
-    _live = null;
+    _kill();
     _pending = 0;
-    proc?.kill();
     if (state.busy) _push(Role.tool, 'Stopped');
     _touch(busy: false);
   }
 
   void setModel(String m) {
     if (state.busy) return;
-    _proc?.kill();
-    _proc = null;
+    _kill();
     state = state.copyWith(model: m);
   }
 
@@ -342,11 +386,6 @@ class _AgentPanelState extends ConsumerState<AgentPanel> {
   Widget build(BuildContext context) {
     final s = ref.watch(agentProvider);
     final agent = ref.read(agentProvider.notifier);
-    ref.listen(agentProvider, (_, _) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_scroll.hasClients) _scroll.jumpTo(_scroll.position.maxScrollExtent);
-      });
-    });
     return Container(
       width: 390,
       decoration: const BoxDecoration(color: Colors.white, border: Border(left: BorderSide(color: Color(0x22000000)))),
@@ -404,13 +443,17 @@ class _AgentPanelState extends ConsumerState<AgentPanel> {
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.black54, fontSize: 13)),
                 ))
+              // Reversed and lazy: stays pinned to the newest message and builds only visible tiles.
               : SelectionArea(
-                  child: SingleChildScrollView(
+                  child: ListView.builder(
                       controller: _scroll,
+                      reverse: true,
                       padding: const EdgeInsets.symmetric(horizontal: 14),
-                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [for (final m in s.msgs) _tile(m)]))),
+                      itemCount: s.msgs.length,
+                      itemBuilder: (_, i) => _tile(s.msgs[s.msgs.length - 1 - i]))),
         ),
-        if (s.busy) const LinearProgressIndicator(minHeight: 2),
+        // Own layer: the indeterminate bar animates every frame and must not repaint the chat with it.
+        if (s.busy) const RepaintBoundary(child: LinearProgressIndicator(minHeight: 2)),
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 6, 6, 10),
           child: Row(children: [

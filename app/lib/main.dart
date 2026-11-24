@@ -15,7 +15,7 @@ import 'package:markdown/markdown.dart' as md;
 import 'package:path/path.dart' as p;
 import 'package:watcher/watcher.dart';
 import 'package:window_manager/legacy.dart';
-import 'agent.dart' show langProvider;
+import 'agent.dart' show killRunningAgent, langProvider;
 import 'course_notebook.dart';
 import 'house_style.dart';
 import 'profiles.dart';
@@ -229,9 +229,20 @@ Future<void> main() async {
         () async {
       await windowManager.show();
     });
+    await windowManager.setPreventClose(true);
+    windowManager.addListener(_CloseGuard());
   }
   activeProfile = readActiveProfile();
   runApp(const ProfileScope(child: App()));
+}
+
+/// Ends a running agent before the window closes; its child processes would otherwise outlive the app.
+class _CloseGuard with WindowListener {
+  @override
+  Future<void> onWindowClose() async {
+    await killRunningAgent();
+    await windowManager.destroy();
+  }
 }
 
 final _router = GoRouter(routes: [

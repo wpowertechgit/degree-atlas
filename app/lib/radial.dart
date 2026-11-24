@@ -155,6 +155,7 @@ class _RadialViewState extends ConsumerState<_RadialView> with TickerProviderSta
   bool startHint = false;
   String? _startKey;
   final _revealTimers = <Timer>[];
+  Timer? _idleTimer;
   final view = TransformationController();
   final paperDrag = ValueNotifier(Offset.zero);
   final deskActivity = ValueNotifier(0);
@@ -162,6 +163,7 @@ class _RadialViewState extends ConsumerState<_RadialView> with TickerProviderSta
   final _cardKey = GlobalKey();
   final _readFocus = FocusNode();
   final _tp = <String, TextPainter>{};
+  TextPainter? _startHereText; // painted every frame while the hint shows, so laid out once
   late final _graphMotion = Listenable.merge([move, prog, pick, emblem, intro, note, idle]);
   late final _cardMotion = Listenable.merge([view, move, pick]);
 
@@ -200,7 +202,7 @@ class _RadialViewState extends ConsumerState<_RadialView> with TickerProviderSta
       revealStage = 0;
       intro.value = 0;
     }
-    if (!reduce) idle.repeat();
+    if (!reduce) _wake();
     _build();
     to = _layout();
     from = to;
@@ -239,6 +241,15 @@ class _RadialViewState extends ConsumerState<_RadialView> with TickerProviderSta
     });
   }
 
+  /// Runs the idle drift while the pointer is active. The drift repaints the whole map every frame,
+  /// so it pauses after a while without input instead of keeping the GPU busy indefinitely.
+  void _wake() {
+    if (reducedMotion) return;
+    if (!idle.isAnimating) idle.repeat();
+    _idleTimer?.cancel();
+    _idleTimer = Timer(const Duration(seconds: 15), idle.stop);
+  }
+
   /// Subtle idle drift so the map never sits perfectly still.
   _P _bob(_N n, _P p) {
     if (n.level == 0 || reducedMotion) return p;
@@ -250,6 +261,10 @@ class _RadialViewState extends ConsumerState<_RadialView> with TickerProviderSta
   void didUpdateWidget(_RadialView old) {
     super.didUpdateWidget(old);
     if (old.atlas != widget.atlas) {
+      for (final t in _tp.values) {
+        t.dispose(); // labels of the previous atlas
+      }
+      _tp.clear();
       _build();
       if (openDomain != null && !byKey.containsKey(openDomain)) openDomain = openDegree = selected = null;
       if (openDegree != null && !byKey.containsKey(openDegree)) openDegree = selected = null;
@@ -286,6 +301,7 @@ class _RadialViewState extends ConsumerState<_RadialView> with TickerProviderSta
     paperDrag.dispose();
     deskActivity.dispose();
     doodleReplay.dispose();
+    _idleTimer?.cancel();
     for (final timer in _revealTimers) {
       timer.cancel();
     }
@@ -293,6 +309,7 @@ class _RadialViewState extends ConsumerState<_RadialView> with TickerProviderSta
     note.dispose();
     idle.dispose();
     _readFocus.dispose();
+    _startHereText?.dispose();
     for (final text in _tp.values) {
       text.dispose();
     }
@@ -947,7 +964,11 @@ class _RadialViewState extends ConsumerState<_RadialView> with TickerProviderSta
         view.value = Matrix4.diagonal3Values(s, s, 1)
           ..setTranslationRaw((box.maxWidth - _canvas * s) / 2, (box.maxHeight - _canvas * s) / 2, 0);
       }
-      return Stack(children: [
+      return Listener(
+        onPointerHover: (_) => _wake(),
+        onPointerDown: (_) => _wake(),
+        onPointerSignal: (_) => _wake(),
+        child: Stack(children: [
         Positioned.fill(child: IgnorePointer(child: RepaintBoundary(
           child: CustomPaint(painter: AtlasDesk(view: view, drag: paperDrag, settle: settle, flip: flip)),
         ))),
@@ -1115,7 +1136,7 @@ class _RadialViewState extends ConsumerState<_RadialView> with TickerProviderSta
           ]),
         ),
         if (sel != null && selNode != null && to.containsKey(selNode.key)) _brief(sel, selNode, box),
-      ]);
+      ]));
     });
   }
 }
@@ -1278,12 +1299,12 @@ class _AtlasPainter extends CustomPainter {
     final c = p.xy;
     final d = Offset(math.cos(p.a), math.sin(p.a));
     final side = Offset(-d.dy, d.dx);
-    final tp = TextPainter(
+    final tp = s._startHereText ??= (TextPainter(
       text: TextSpan(
           text: 'Start here',
           style: TextStyle(fontFamily: HouseStyle.handwriting, fontSize: 27, fontWeight: FontWeight.w700, color: HouseStyle.binder)),
       textDirection: TextDirection.ltr,
-    )..layout();
+    )..layout());
     final centre = c - d * 150 + side * 34;
     final box = Rect.fromCenter(center: centre, width: tp.width, height: tp.height);
     final sway = t >= 1 && !s.reducedMotion ? math.sin(s.idle.value * 2 * math.pi * 2) : 0.0;
