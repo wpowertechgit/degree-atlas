@@ -158,10 +158,9 @@ for f in root.glob("data/degrees/*.json"):
 
 cur = repo / "data/curated_prerequisites.json"  # shared reference, only checked for the main data set
 if cur.exists() and root == repo:
+    # Like mapper.py, links to subjects not built in this checkout are ignored: the data set is
+    # generated per checkout and may cover only some universities.
     for sid, ps in load(cur).items():
-        for x in [sid, *ps]:
-            if x not in metas:
-                errors.append(f"curated_prerequisites.json: unknown subject '{x}'")
         if sid in ps:
             errors.append(f"curated_prerequisites.json: '{sid}' lists itself")
 
