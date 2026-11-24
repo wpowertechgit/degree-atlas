@@ -58,12 +58,14 @@ No API keys, no accounts, no hosted service. It drives a coding agent you alread
 ```bash
 git clone https://github.com/wpowertechgit/degree-atlas.git
 cd degree-atlas
-python scripts/setup.py          # Python deps, Flutter build, local folders, validation
+python scripts/setup.py          # Python deps, prebuilt Windows app, local folders, validation
 ```
 
-Or just open the repo in Claude Code and say "set this up" (see **Setup after clone** in [AGENTS.md](AGENTS.md)). Then start the viewer with `launch.bat` on Windows, or run the built app under `app/build/`.
+Or just open the repo in Claude Code and say "set this up" (see **Setup after clone** in [AGENTS.md](AGENTS.md)). Then start the viewer with `launch.bat` on Windows.
 
-You need Python 3.10+, the Flutter SDK (`setup.py --install-flutter` can fetch it), and Claude Code or Codex for the writing. Windows also needs Visual Studio with the C++ desktop workload for the Flutter build.
+You need Python 3.10+ and Claude Code or Codex for the writing. On Windows, `setup.py` downloads the prebuilt app from the latest [release](https://github.com/wpowertechgit/degree-atlas/releases), so no Flutter or Visual Studio is needed. The app is unsigned: if you download the zip manually in a browser, Windows SmartScreen shows "unknown publisher" (More info, Run anyway).
+
+To build from source instead (macOS, Linux, or app development), run `python scripts/setup.py --build-app`. That needs the Flutter SDK (add `--install-flutter` to fetch it) and, on Windows, Visual Studio with the C++ desktop workload.
 
 **First run:** open the profile menu, create an empty profile, open the Agent panel and tell it what you want to learn. Or go **Data → Import course materials…** and start from your own files.
 

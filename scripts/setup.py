@@ -1,21 +1,26 @@
 """One-shot setup after `git clone`: Python deps, Flutter app build, local folders, validation.
 
-  python scripts/setup.py                     # everything
-  python scripts/setup.py --no-app            # skip the Flutter build (agent workflow only)
-  python scripts/setup.py --install-flutter   # clone the Flutter stable SDK into ~/flutter if none is found
+  python scripts/setup.py                     # everything; on Windows downloads the prebuilt app
+  python scripts/setup.py --no-app            # skip the app (agent workflow only)
+  python scripts/setup.py --build-app         # build the app from source (Flutter + Visual Studio C++ on Windows)
+  python scripts/setup.py --build-app --install-flutter   # also clone the Flutter SDK into ~/flutter if none is found
 """
 import argparse
 import os
 import platform
 import shutil
+import json
 import subprocess
 import sys
+import urllib.request
+import zipfile
 from pathlib import Path
 
 repo = Path(__file__).resolve().parent.parent
 ap = argparse.ArgumentParser()
 ap.add_argument("--no-app", action="store_true")
 ap.add_argument("--install-flutter", action="store_true")
+ap.add_argument("--build-app", action="store_true", help="build the app from source instead of downloading the Windows release")
 args = ap.parse_args()
 windows = platform.system() == "Windows"
 problems = []
@@ -58,7 +63,34 @@ for d in ("work", "profiles"):
     (repo / d).mkdir(exist_ok=True)
 print("work/ and profiles/ ready")
 
-if not args.no_app:
+def download_release():
+    """Fetch the prebuilt Windows app from the latest GitHub release. Returns True on success."""
+    api = "https://api.github.com/repos/wpowertechgit/degree-atlas/releases/latest"
+    try:
+        with urllib.request.urlopen(api, timeout=30) as r:
+            assets = json.load(r)["assets"]
+        url = next(a["browser_download_url"] for a in assets if a["name"] == "degree-atlas-windows.zip")
+        out = repo / "app/build/windows/x64/runner/Release"
+        out.mkdir(parents=True, exist_ok=True)
+        zpath = out / "_download.zip"
+        print("downloading", url)
+        urllib.request.urlretrieve(url, zpath)
+        with zipfile.ZipFile(zpath) as z:
+            z.extractall(out)
+        zpath.unlink()
+        return (out / "degree_atlas.exe").exists()
+    except Exception as e:  # network, no release yet, bad zip
+        print("release download failed:", e)
+        return False
+
+
+if not args.no_app and windows and not args.build_app:
+    step("Prebuilt app")
+    if download_release():
+        print("app ready (prebuilt release)")
+    else:
+        problems.append("could not download the prebuilt app; get it from https://github.com/wpowertechgit/degree-atlas/releases or rerun with --build-app (needs Flutter and Visual Studio C++)")
+elif not args.no_app:
     step("Flutter app")
     flutter = find_flutter()
     if not flutter and args.install_flutter and shutil.which("git"):

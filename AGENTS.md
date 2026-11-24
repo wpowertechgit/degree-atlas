@@ -31,7 +31,7 @@ Expansion order: the curriculum decides, not interest. The user gives a degree a
 
 ## Setup after clone
 
-If the user asks you to set up this repository (for example "clone this and set it up"): clone it, `cd` into it and run `python scripts/setup.py` (add `--install-flutter` when no Flutter SDK is installed, `--no-app` when only the agent workflow is needed). It installs the Python requirements, builds the Flutter app, creates `work/` and `profiles/` and validates. Fix every item under "Needs attention", rerun until it prints "Setup complete", then tell the user how to start the app (`launch.bat` on Windows). Then continue with Bootstrap below only if they want the full university data set; for a personal topic, a profile and a learning request are enough.
+If the user asks you to set up this repository (for example "clone this and set it up"): clone it, `cd` into it and run `python scripts/setup.py` (`--no-app` when only the agent workflow is needed). It installs the Python requirements, downloads the prebuilt Windows app from the latest GitHub release (no Flutter or Visual Studio needed), creates `work/` and `profiles/` and validates. Never install Visual Studio or Flutter unless the user asks to build from source (`--build-app`, optionally with `--install-flutter`; macOS and Linux have no prebuilt app and need `--build-app`). Fix every item under "Needs attention", rerun until it prints "Setup complete", then tell the user how to start the app (`launch.bat` on Windows). Then continue with Bootstrap below only if they want the full university data set; for a personal topic, a profile and a learning request are enough.
 
 ## Bootstrap (empty checkout)
 
