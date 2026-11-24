@@ -19,17 +19,19 @@ class Msg {
 }
 
 class AgentState {
-  const AgentState({this.msgs = const [], this.busy = false, this.model = 'sonnet'});
+  const AgentState({this.msgs = const [], this.busy = false, this.model = 'sonnet', this.effort = 'medium'});
   final List<Msg> msgs;
   final bool busy;
   final String model;
-  AgentState copyWith({List<Msg>? msgs, bool? busy, String? model}) =>
-      AgentState(msgs: msgs ?? this.msgs, busy: busy ?? this.busy, model: model ?? this.model);
+  final String effort; // claude --effort: low, medium, high, xhigh, max
+  AgentState copyWith({List<Msg>? msgs, bool? busy, String? model, String? effort}) => AgentState(
+      msgs: msgs ?? this.msgs, busy: busy ?? this.busy, model: model ?? this.model, effort: effort ?? this.effort);
 }
 
 String _systemPrompt(String profileRoot, bool profile) =>
     'You are driven from the Degree Atlas desktop app; the user reads a small chat panel. '
-    'Follow AGENTS.md exactly. Do the task without asking for confirmation. '
+    'Follow AGENTS.md exactly. Do the task without asking for confirmation; the only exception is the one question '
+    'AGENTS.md (Learning request) asks before building a new program, which you ask and then stop until the user answers. '
     'Do not narrate: no plans, no status updates, no commentary between tool calls, no caveats. '
     'Run subagents in the foreground and never poll or wait on background work. '
     'Your only text output is one final message of at most three short lines stating the result. '
@@ -127,6 +129,7 @@ class AgentNotifier extends Notifier<AgentState> {
         '--verbose',
         '--permission-mode', 'bypassPermissions',
         '--model', state.model,
+        '--effort', state.effort,
         '--append-system-prompt', _systemPrompt(_root, activeProfile != null),
         if (_session != null) ...['--resume', _session!],
       ],
@@ -238,10 +241,17 @@ class AgentNotifier extends Notifier<AgentState> {
     state = state.copyWith(model: m);
   }
 
+  /// Takes effect on the next message; the conversation resumes from the saved session.
+  void setEffort(String e) {
+    if (state.busy) return;
+    _kill();
+    state = state.copyWith(effort: e);
+  }
+
   void newChat() {
     stop();
     _forgetSession();
-    state = AgentState(model: state.model);
+    state = AgentState(model: state.model, effort: state.effort);
   }
 
   String _file(Subject s, int n, String lang) => lang == 'en' ? 'L$n.md' : 'L$n.$lang.md';
@@ -424,12 +434,25 @@ class _AgentPanelState extends ConsumerState<AgentPanel> {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Wrap(spacing: 6, children: [
+          child: Wrap(spacing: 6, crossAxisAlignment: WrapCrossAlignment.center, children: [
             for (final n in [0, 1, 2, 3])
               ActionChip(
                   label: Text('Next L$n', style: const TextStyle(fontSize: 11.5, color: Colors.black87)),
                   visualDensity: VisualDensity.compact,
                   onPressed: () => agent.continueLevel(n)),
+            Tooltip(
+              message: 'Effort: lower is faster, higher thinks longer',
+              child: DropdownButton<String>(
+                value: s.effort,
+                underline: const SizedBox(),
+                style: const TextStyle(fontSize: 12, color: Colors.black87),
+                items: [
+                  for (final e in const ['low', 'medium', 'high', 'xhigh', 'max'])
+                    DropdownMenuItem(value: e, child: Text('effort: $e')),
+                ],
+                onChanged: s.busy ? null : (v) => agent.setEffort(v!),
+              ),
+            ),
           ]),
         ),
         const Divider(height: 12),
