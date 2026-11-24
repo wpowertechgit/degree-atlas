@@ -79,6 +79,9 @@ def download_release():
             z.extractall(out)
         zpath.unlink()
         return (out / "degree_atlas.exe").exists()
+    except PermissionError:
+        print("a file is in use: close Degree Atlas and rerun setup")
+        return False
     except Exception as e:  # network, no release yet, bad zip
         print("release download failed:", e)
         return False
