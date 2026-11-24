@@ -749,9 +749,10 @@ class _RadialViewState extends ConsumerState<_RadialView> with TickerProviderSta
                   const SizedBox(height: HouseStyle.spacing * 2),
                   if (level == 4)
                     PracticeView(subject: s, lang: lang, close: () => Navigator.pop(c))
-                  else if (text != null)
-                    Md(text, s.dir, key: ValueKey(level), courseTitle: s.title)
-                  else ...[
+                  else if (text != null) ...[
+                    Md(text, s.dir, key: ValueKey(level), courseTitle: s.title),
+                    SourcesList(s.levelSources(level)),
+                  ] else ...[
                     Text('L$level has not been written yet.'),
                     const SizedBox(height: HouseStyle.spacing),
                     if (level == 0 || s.levelText(level - 1) != null)

@@ -69,6 +69,19 @@ class Subject {
     return _read('L$n.md');
   }
 
+  /// Sources of level [n] from sources.json, in the order that numbers the level's inline [n] citations.
+  List<Map<String, dynamic>> levelSources(int n) {
+    try {
+      final all = jsonDecode(_read('sources.json') ?? '[]');
+      return [
+        for (final e in all is List ? all : const [])
+          if (e is Map && e['level'] == 'L$n') Map<String, dynamic>.from(e)
+      ];
+    } on FormatException {
+      return const []; // caught mid-write or malformed; validate.py reports it
+    }
+  }
+
   bool hasTranslation(int n, String lang) => lang == 'en' || File(p.join(dir.path, 'L$n.$lang.md')).existsSync();
 
   String? _read(String name) {
@@ -577,9 +590,57 @@ class SubjectPage extends ConsumerWidget {
         if (text != null)
           Padding(
             padding: const EdgeInsets.only(bottom: HouseStyle.spacing * 2),
-            child: Md(text, s.dir, courseTitle: s.title),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Md(text, s.dir, courseTitle: s.title),
+              SourcesList(s.levelSources(n)),
+            ]),
           ),
       ],
+    );
+  }
+}
+
+/// Opens an http(s) link in the default browser. The URL is handed to the OS as a single argument, never
+/// through a shell, so text in agent-written files cannot run commands.
+void openUrl(String url) {
+  final u = Uri.tryParse(url);
+  if (u == null || !(u.isScheme('http') || u.isScheme('https'))) return;
+  if (Platform.isWindows) {
+    Process.run('rundll32', ['url.dll,FileProtocolHandler', u.toString()]).ignore();
+  } else {
+    Process.run(Platform.isMacOS ? 'open' : 'xdg-open', [u.toString()]).ignore();
+  }
+}
+
+/// Numbered reference list under a level; the numbers match the level's inline [n] citations.
+class SourcesList extends StatelessWidget {
+  const SourcesList(this.sources, {super.key});
+  final List<Map<String, dynamic>> sources;
+
+  @override
+  Widget build(BuildContext context) {
+    if (sources.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: HouseStyle.spacing * 2),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text('Sources', style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: HouseStyle.spacing),
+        for (final (i, s) in sources.indexed)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('[${i + 1}] ${s['title'] ?? 'Untitled source'}'),
+              if (s['url'] is String)
+                InkWell(
+                  onTap: () => openUrl(s['url']),
+                  child: Text(s['url'], style: const TextStyle(color: HouseStyle.pen, decoration: TextDecoration.underline)),
+                ),
+              if (s['file'] is String)
+                Text('${s['file']}${s['pages'] == null ? '' : ', ${s['pages']}'}',
+                    style: const TextStyle(color: HouseStyle.graphite)),
+            ]),
+          ),
+      ]),
     );
   }
 }
@@ -608,6 +669,7 @@ class Md extends StatelessWidget {
   Widget build(BuildContext context) => MarkdownBody(
         data: _body,
         selectable: selectable,
+        onTapLink: (_, href, _) => href == null ? null : openUrl(href),
         builders: {'latex': LatexElementBuilder()},
         extensionSet: md.ExtensionSet([...md.ExtensionSet.gitHubFlavored.blockSyntaxes, LatexBlockSyntax()],
             [...md.ExtensionSet.gitHubFlavored.inlineSyntaxes, LatexInlineSyntax()]),
