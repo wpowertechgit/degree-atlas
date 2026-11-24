@@ -38,7 +38,7 @@ If the user asks you to set up this repository (for example "clone this and set 
 The repo ships no scraped or generated data (licensing). Build it locally:
 
 1. Pick universities from `catalogs.json` (MIT, ETH Zurich and NUS are examples; add your own). Check each site's terms first.
-2. Per university and degree, run the scout (`.claude/agents/scout.md`). Read the official study plan or degree chart and the course catalog. Write `data/universities/<id>.json` per `schemas/university.schema.json`. Record the plan URL, requirement evidence, and course URL.
+2. Per university and degree, run the scout (`.claude/agents/scout.md`). Read the official study plan or degree chart and the course catalog. Write `data/universities/<id>.json` per `schemas/university.schema.json`. The file name is the university id that course keys and degree ids are built from: short, lowercase, one per university, never renamed (`mit`, `eth`, `nus`, `cambridge`). Record the plan URL, requirement evidence, and course URL.
 3. `python scripts/mapper.py cluster`, `judge`, `assemble`: merges equivalent courses into subjects, builds `data/subjects/`, `data/degrees/`, links prerequisites. `data/domains/`, `data/curricula.json` and `data/curated_prerequisites.json` are committed and reused. For a requirements-only correction, run `python scripts/mapper.py curriculum` to rebuild degree memberships without rebuilding subject clusters or notes.
 4. `python scripts/validate.py` must print `OK`.
 5. Generate levels with the loop below, starting at L0.

@@ -26,6 +26,7 @@ def words(s):
 
 
 def main():
+    mapper.migrate_uni_ids()
     cs = mapper.courses()
     done = mapper.load(out_f) if out_f.exists() else {}
     bytitle = defaultdict(list)
@@ -43,7 +44,7 @@ def main():
         score = defaultdict(int)
         for w in words(txt):
             for o in bytitle.get(w, []):
-                if o != k and cs[o]["uni"] == c["uni"]:
+                if o != k and cs[o]["uid"] == c["uid"]:
                     score[o] += 1
         cand = [o for o, _ in sorted(score.items(), key=lambda x: -x[1])[:10]]
         if cand:

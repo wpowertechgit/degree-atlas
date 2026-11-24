@@ -67,6 +67,65 @@ class CurriculumMappingTests(unittest.TestCase):
             curriculum_entries(degree, plan, lambda _code: None)
 
 
+class UniversityIdTests(unittest.TestCase):
+    """University ids come from the file name, so names that share a first word stay separate."""
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        (self.root / "data" / "universities").mkdir(parents=True)
+
+    def tearDown(self):
+        self.temp.cleanup()
+
+    def _university(self, stem, name):
+        (self.root / "data" / "universities" / f"{stem}.json").write_text(json.dumps({
+            "university": name,
+            "degrees": [{"name": "Computer Science", "level": "BSc",
+                         "courses": [{"code": "CS101", "title": f"Intro {stem}", "description": "x"}]}],
+        }), encoding="utf-8")
+
+    def _mapper(self, code):
+        env = {**os.environ, "DEGREE_ATLAS_PROFILE": str(self.root)}
+        return subprocess.run([sys.executable, "-c", "import json, mapper\n" + code], cwd=SCRIPTS, env=env,
+                              check=True, capture_output=True, text=True).stdout
+
+    def test_names_sharing_a_first_word_get_distinct_keys_and_degrees(self):
+        self._university("tokyo", "University of Tokyo")
+        self._university("cambridge", "University of Cambridge")
+        out = json.loads(self._mapper(
+            "print(json.dumps([sorted(mapper.courses()), "
+            "sorted(mapper.degree_id(u['_id'], d) for u in mapper.unis() for d in u['degrees'])]))"))
+        self.assertEqual(out, [["cambridge:CS101", "tokyo:CS101"],
+                               ["cambridge-bsc-computer-science", "tokyo-bsc-computer-science"]])
+
+    def test_old_first_word_ids_are_migrated(self):
+        self._university("tokyo", "University of Tokyo")
+        work, data = self.root / "work", self.root / "data"
+        for folder in (work, data / "degrees", data / "domains", data / "subjects" / "intro"):
+            folder.mkdir(parents=True, exist_ok=True)
+        (work / "clusters.json").write_text(json.dumps({"multi": [], "single": ["university:CS101"]}))
+        (work / "judged.json").write_text(json.dumps(
+            {"curriculum-equivalence-v2|university:CS101|mit:6.1": [["university:CS101"], ["mit:6.1"]]}))
+        old = "university-bsc-computer-science"
+        (data / "degrees" / f"{old}.json").write_text(json.dumps({"id": old, "subjects": []}))
+        (data / "domains" / "computing.json").write_text(json.dumps({"id": "computing", "degrees": [old]}))
+        (data / "subjects" / "intro" / "meta.json").write_text(json.dumps(
+            {"id": "intro", "degrees": [{"degree": old, "kind": "mandatory"}]}))
+
+        self._mapper("mapper.migrate_uni_ids()\nmapper.migrate_uni_ids()")  # the second run must change nothing
+
+        new = "tokyo-bsc-computer-science"
+        load = lambda p: json.loads(p.read_text(encoding="utf-8"))
+        self.assertEqual(load(work / "clusters.json")["single"], ["tokyo:CS101"])
+        self.assertEqual(list(load(work / "judged.json")),
+                         ["curriculum-equivalence-v2|mit:6.1|tokyo:CS101"])
+        self.assertFalse((data / "degrees" / f"{old}.json").exists())
+        self.assertEqual(load(data / "degrees" / f"{new}.json")["id"], new)
+        self.assertEqual(load(data / "domains" / "computing.json")["degrees"], [new])
+        self.assertEqual(load(data / "subjects" / "intro" / "meta.json")["degrees"][0]["degree"], new)
+
+
 class NextScriptTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()

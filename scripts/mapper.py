@@ -31,14 +31,16 @@ def load(p):
 
 
 def save(p, o):
+    Path(p).parent.mkdir(parents=True, exist_ok=True)
     Path(p).write_text(json.dumps(o, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
 def unis():
-    result = [load(f) for f in sorted((root / "data/universities").glob("*.json"))]
+    """University records. `_id` is the file name, which is unique in the folder and keys courses and degrees."""
+    result = [{**load(f), "_id": f.stem} for f in sorted((root / "data/universities").glob("*.json"))]
     plans = curriculum_plans()
     for u in result:
-        uid = u["university"].lower().split()[0]
+        uid = u["_id"]
         for d in u["degrees"]:
             plan = plans.get(degree_id(uid, d), {})
             codes = {c["code"] for c in d["courses"]}
@@ -46,16 +48,86 @@ def unis():
     return result
 
 
+def migrate_uni_ids():
+    """Rename ids made by the old rule (first word of the university name) to the file-name ids.
+
+    Idempotent; touches only course keys in work/, degree ids in data/ and the plan keys in data/curricula.json.
+    Two universities that shared an old id were already merged by the old rule; they are reported, not guessed.
+    """
+    groups = defaultdict(list)
+    for f in sorted((root / "data/universities").glob("*.json")):
+        u = load(f)
+        groups[u["university"].lower().split()[0]].append((f.stem, u))
+    keys, dids = {}, {}
+    for old, members in groups.items():
+        if len(members) > 1:
+            print(f"warning: {', '.join(m[0] for m in members)} shared the id '{old}'; rerun cluster, judge and assemble")
+            continue
+        new, u = members[0]
+        if new == old:
+            continue
+        keys[old] = new
+        for d in u["degrees"]:
+            dids[degree_id(old, d)] = degree_id(new, d)
+    if not keys:
+        return
+
+    def key(k):  # 'uni:code'
+        uid, _, code = k.partition(":")
+        return f"{keys.get(uid, uid)}:{code}" if code else k
+
+    def update(path, fn):
+        if path.exists() and (new := fn(load(path))) != load(path):
+            save(path, new)
+            print(f"migrated university ids in {path.relative_to(path.parents[1])}")
+
+    update(work / "clusters.json", lambda c: {"multi": [[key(k) for k in g] for g in c["multi"]],
+                                               "single": [key(k) for k in c["single"]]})
+    update(work / "judged.json", lambda j: {
+        JUDGE_REVISION + "|" + "|".join(sorted(key(k) for k in jk.split("|")[1:])) if jk.startswith(JUDGE_REVISION + "|") else jk:
+        [[key(k) for k in part] for part in parts] for jk, parts in j.items()})
+    update(work / "prereq_llm.json", lambda p: {key(k): [key(v) for v in vs] for k, vs in p.items()})
+    cur = repo / "data/curricula.json"  # committed: rename keys in the text so formatting and line endings stay
+    if cur.exists():
+        with open(cur, encoding="utf-8", newline="") as f:
+            text = f.read()
+        renamed = text
+        for old_did, new_did in dids.items():
+            renamed = renamed.replace(f'"{old_did}"', f'"{new_did}"')
+        if renamed != text:
+            with open(cur, "w", encoding="utf-8", newline="") as f:
+                f.write(renamed)
+            print("migrated university ids in data/curricula.json")
+    for old_did, new_did in dids.items():
+        old_f, new_f = root / "data/degrees" / f"{old_did}.json", root / "data/degrees" / f"{new_did}.json"
+        if old_f.exists() and not new_f.exists():
+            save(new_f, {**load(old_f), "id": new_did})
+            old_f.unlink()
+            print(f"renamed degree {old_did} -> {new_did}")
+    for f in (root / "data/domains").glob("*.json"):
+        update(f, lambda d: {**d, "degrees": sorted({dids.get(x, x) for x in d.get("degrees", [])})})
+    for f in (root / "data/subjects").glob("*/meta.json"):
+        m = load(f)
+        degrees = [{**r, "degree": dids.get(r["degree"], r["degree"])} for r in m.get("degrees", [])]
+        if degrees != m.get("degrees", []):
+            save(f, {**m, "degrees": degrees})
+
+
+def alias_uid(name, ids):
+    """University id for a stored alias, which records only the display name; `ids` maps names to ids."""
+    return ids.get(name) or slug(name)
+
+
 def courses():
-    """Unique courses keyed 'uni:code'."""
+    """Unique courses keyed 'uni:code', where uni is the university id."""
     out = {}
     for u in unis():
-        uid = u["university"].lower().split()[0]
+        uid = u["_id"]
         for d in u["degrees"]:
             for c in d["courses"]:
                 k = f"{uid}:{c['code']}"
                 if k not in out:
-                    out[k] = {**c, "uni": u["university"], "key": k}
+                    out[k] = {**c, "uni": u["university"], "uid": uid, "key": k}
     return out
 
 
@@ -95,7 +167,7 @@ def cluster():
                 if o > k:
                     score[o] += x * vec[o][w]
         for o, s in score.items():
-            if s >= (THRESHOLD if cs[o]["uni"] != cs[k]["uni"] else SAME_UNI_THRESHOLD):
+            if s >= (THRESHOLD if cs[o]["uid"] != cs[k]["uid"] else SAME_UNI_THRESHOLD):
                 parent[find(o)] = find(k)
                 pairs += 1
     groups = defaultdict(list)
@@ -249,15 +321,16 @@ def curriculum():
     plans = curriculum_plans()
     subject_dir = root / "data/subjects"
     metas = {p.parent.name: load(p) for p in subject_dir.glob("*/meta.json")}
+    universities = unis()
+    uni_ids = {u["university"]: u["_id"] for u in universities}
     alias_ids = {}
     for sid, meta in metas.items():
         for alias in meta["aliases"]:
             if alias.get("code"):
-                alias_ids.setdefault((alias["university"].lower().split()[0], alias["code"]), sid)
+                alias_ids.setdefault((alias_uid(alias["university"], uni_ids), alias["code"]), sid)
     records, created, revised = {}, set(), set()
-    universities = unis()
     for uni in universities:
-        uid = uni["university"].lower().split()[0]
+        uid = uni["_id"]
         for degree in uni["degrees"]:
             did = degree_id(uid, degree)
             plan = plans.get(did, {})
@@ -277,7 +350,7 @@ def curriculum():
                 if prior is not None:
                     old = metas[prior]
                     aliases = [a for a in old["aliases"]
-                               if (a["university"].lower().split()[0], a.get("code")) != key]
+                               if (alias_uid(a["university"], uni_ids), a.get("code")) != key]
                     if not aliases:
                         raise ValueError(f"{prior}: preserve the existing ID for this single-course subject")
                     old["aliases"] = aliases
@@ -296,7 +369,7 @@ def curriculum():
                 }
                 created.add(sid)
     for uni in universities:
-        uid = uni["university"].lower().split()[0]
+        uid = uni["_id"]
         for degree in uni["degrees"]:
             if not degree["courses"]:
                 continue
@@ -359,9 +432,12 @@ def domain_of(title):
 def assemble():
     cs = courses()
     plans = curriculum_plans()
+    universities = unis()
+    uni_ids = {u["university"]: u["_id"] for u in universities}
+    degree_uni = {degree_id(u["_id"], d): u["_id"] for u in universities for d in u["degrees"]}
     assignments = {
-        f"{did.split('-')[0]}:{code}": sid
-        for did, plan in plans.items()
+        f"{degree_uni[did]}:{code}": sid
+        for did, plan in plans.items() if did in degree_uni  # plans of universities not in this data set are unused
         for code, sid in plan.get("subject_assignments", {}).items()
     }
     cl = load(work / "clusters.json")
@@ -388,7 +464,7 @@ def assemble():
     for sid, meta in reserved.items():
         for alias in meta["aliases"]:
             if alias.get("code"):
-                old_keys[f"{alias['university'].lower().split()[0]}:{alias['code']}"].add(sid)
+                old_keys[f"{alias_uid(alias['university'], uni_ids)}:{alias['code']}"].add(sid)
     def overlap(group):
         return Counter(sid for key in group for sid in old_keys[key])
     sets.sort(key=lambda group: (-max(overlap(group).values(), default=0), sorted(group)))
@@ -410,10 +486,10 @@ def assemble():
     # prerequisites: resolve codes of the same university to subject ids
     code2key = defaultdict(dict)
     for k, c in cs.items():
-        code2key[c["uni"]][c["code"]] = k
+        code2key[c["uid"]][c["code"]] = k
     degs = []
-    for u in unis():
-        uid = u["university"].lower().split()[0]
+    for u in universities:
+        uid = u["_id"]
         for d in u["degrees"]:
             if d["courses"]:
                 degs.append((uid, u, d))
@@ -432,7 +508,7 @@ def assemble():
     prereq = defaultdict(set)
     for k, c in cs.items():
         for p in c.get("prerequisites", []):
-            pk = code2key[c["uni"]].get(p)
+            pk = code2key[c["uid"]].get(p)
             if pk and key2id[pk] != key2id[k]:
                 prereq[key2id[k]].add(key2id[pk])
     llm_f = work / "prereq_llm.json"  # free-text prerequisites resolved by scripts/prereqs.py
@@ -544,4 +620,5 @@ if __name__ == "__main__":
     steps = {"cluster": cluster, "judge": judge, "assemble": assemble, "curriculum": curriculum}
     if len(sys.argv) != 2 or sys.argv[1] not in steps:
         sys.exit("usage: python scripts/mapper.py {" + "|".join(steps) + "}")
+    migrate_uni_ids()
     steps[sys.argv[1]]()

@@ -233,7 +233,7 @@
       "6.1220[J]": "https://catalog.mit.edu/subjects/6/"
     }
   },
-  "national-bsc-bachelor-of-computing-computer-science": {
+  "nus-bsc-bachelor-of-computing-computer-science": {
     "source": "https://www.comp.nus.edu.sg/programmes/ug/cs/curr/",
     "required": {
       "CS1231S": null,
