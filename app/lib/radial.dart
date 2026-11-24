@@ -15,6 +15,7 @@ import 'course_notebook.dart';
 import 'house_style.dart';
 import 'exercises.dart';
 import 'main.dart';
+import 'note_export.dart';
 import 'profiles.dart';
 import 'progress.dart';
 import 'transfer.dart';
@@ -716,6 +717,14 @@ class _RadialViewState extends ConsumerState<_RadialView> with TickerProviderSta
                             Navigator.pop(c);
                           },
                           icon: const Icon(Icons.refresh),
+                        ),
+                        PopupMenuButton<NoteFormat>(
+                          tooltip: 'Export this note',
+                          icon: const Icon(Icons.file_download_outlined, size: 20),
+                          onSelected: (f) => exportNote(s, level, lang, f),
+                          itemBuilder: (_) => [
+                            for (final f in NoteFormat.values) PopupMenuItem(value: f, child: Text(f.label)),
+                          ],
                         ),
                       ],
                       TextButton(

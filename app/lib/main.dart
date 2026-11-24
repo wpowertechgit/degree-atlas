@@ -11,12 +11,12 @@ import 'package:flutter_markdown_plus_latex/flutter_markdown_plus_latex.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:markdown/markdown.dart' as md;
 import 'package:path/path.dart' as p;
 import 'package:watcher/watcher.dart';
 import 'package:window_manager/legacy.dart';
 import 'agent.dart' show killRunningAgent, langProvider;
 import 'course_notebook.dart';
+import 'math_syntax.dart';
 import 'house_style.dart';
 import 'profiles.dart';
 import 'radial.dart';
@@ -673,8 +673,7 @@ class Md extends StatelessWidget {
         selectable: selectable,
         onTapLink: (_, href, _) => href == null ? null : openUrl(href),
         builders: {'latex': LatexElementBuilder()},
-        extensionSet: md.ExtensionSet([...md.ExtensionSet.gitHubFlavored.blockSyntaxes, LatexBlockSyntax()],
-            [...md.ExtensionSet.gitHubFlavored.inlineSyntaxes, LatexInlineSyntax()]),
+        extensionSet: mathExtensionSet,
         styleSheet: MarkdownStyleSheet(
           h1: Theme.of(context).textTheme.headlineMedium,
           h2: Theme.of(context).textTheme.titleLarge,
