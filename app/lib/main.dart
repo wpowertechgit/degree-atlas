@@ -20,6 +20,7 @@ import 'course_notebook.dart';
 import 'house_style.dart';
 import 'profiles.dart';
 import 'radial.dart';
+import 'updater.dart' show checkForUpdate;
 
 const accent = HouseStyle.binder;
 const paper = HouseStyle.paper;
@@ -250,6 +251,7 @@ Future<void> main() async {
   }
   activeProfile = readActiveProfile();
   runApp(const ProfileScope(child: App()));
+  WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(checkForUpdate()));
 }
 
 /// Ends a running agent before the window closes; its child processes would otherwise outlive the app.

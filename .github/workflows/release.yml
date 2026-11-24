@@ -17,11 +17,17 @@ jobs:
         with:
           channel: stable
           cache: true
+      - name: Version
+        # Tag v1.2.3 -> 1.2.3. Manual runs get 0.0.0, which the in-app updater treats as a local build.
+        shell: pwsh
+        run: |
+          $version = if ('${{ github.ref_type }}' -eq 'tag') { '${{ github.ref_name }}'.TrimStart('v') } else { '0.0.0' }
+          "APP_VERSION=$version" >> $env:GITHUB_ENV
       - name: Build
         working-directory: app
         run: |
           flutter pub get
-          flutter build windows --release
+          flutter build windows --release --build-name=$env:APP_VERSION --dart-define=APP_VERSION=$env:APP_VERSION
       - name: Add Visual C++ runtime
         # App-local copies, so the app starts on PCs without the VC++ redistributable.
         shell: pwsh
@@ -35,9 +41,8 @@ jobs:
       - name: Build installer
         shell: pwsh
         run: |
-          $version = if ('${{ github.ref_type }}' -eq 'tag') { '${{ github.ref_name }}'.TrimStart('v') } else { '0.0.0' }
           choco install innosetup -y --no-progress
-          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DMyAppVersion=$version" installer/degree-atlas.iss
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DMyAppVersion=$env:APP_VERSION" installer/degree-atlas.iss
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
           Move-Item installer/output/DegreeAtlas-Setup-*.exe .
       - name: Upload artifact

@@ -59,7 +59,9 @@ Source: "..\catalogs.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\requirements.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\scripts\*"; DestDir: "{app}\scripts"; Excludes: "__pycache__"; Flags: ignoreversion recursesubdirs
 Source: "..\schemas\*"; DestDir: "{app}\schemas"; Flags: ignoreversion recursesubdirs
-Source: "..\data\*"; DestDir: "{app}\data"; Excludes: "subjects,degrees,universities"; Flags: ignoreversion recursesubdirs
+Source: "..\data\*"; DestDir: "{app}\data"; Excludes: "subjects,degrees,universities,domains"; Flags: ignoreversion recursesubdirs
+; Domain lists gain the user's own degrees, so an update never overwrites them.
+Source: "..\data\domains\*"; DestDir: "{app}\data\domains"; Flags: onlyifdoesntexist uninsneveruninstall
 Source: "..\.claude\agents\*"; DestDir: "{app}\.claude\agents"; Flags: ignoreversion recursesubdirs
 
 [Dirs]
@@ -74,5 +76,14 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\bin\{#MyAppExe}"; WorkingDi
 ; Python packages for the scripts. Skipped silently when Python is not installed yet.
 Filename: "{cmd}"; Parameters: "/c python -m pip install --user -q -r ""{app}\requirements.txt"""; StatusMsg: "Installing Python packages..."; Flags: runhidden waituntilterminated
 Filename: "{app}\bin\{#MyAppExe}"; WorkingDir: "{app}"; Description: "{cm:LaunchProgram,{#MyAppName}}"; Flags: nowait postinstall skipifsilent
+; The in-app updater runs setup with /SILENT /RELAUNCH=1 and expects the app to come back afterwards.
+Filename: "{app}\bin\{#MyAppExe}"; WorkingDir: "{app}"; Flags: nowait; Check: WantsRelaunch
 
 ; profiles\, work\ and generated data are user content and are deliberately left on uninstall.
+
+[Code]
+// True when the in-app updater started setup and wants the app started again afterwards.
+function WantsRelaunch: Boolean;
+begin
+  Result := ExpandConstant('{param:RELAUNCH|0}') = '1';
+end;
