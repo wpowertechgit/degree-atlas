@@ -15,7 +15,10 @@
   <img alt="Agents: Claude Code and Codex" src="https://img.shields.io/badge/agents-Claude%20Code%20%7C%20Codex-8A63D2">
 </p>
 
-<!-- Add a screenshot of the atlas here: ![Degree Atlas](docs/atlas.png) -->
+<p align="center">
+  <img alt="The atlas: domains, degrees and their courses by semester, with a course card" src="docs/atlas.png" width="49%">
+  <img alt="A course opened as a notebook page at level L0" src="docs/notebook.png" width="49%">
+</p>
 
 Degree Atlas is for the people who want to actually learn a field but are way too lazy to sit down and grind through 800 pages of PDFs. Yeah, same bro. You tell your AI agent what you want to learn (or throw your own course files at it), it figures out what a real degree would teach you and in what order, writes it up at the depth you pick, and gives you a map to browse it on. You read, you practise, you move on.
 
